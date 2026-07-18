@@ -1,0 +1,1 @@
+console.log("Hello, World! This is a mock real-time server resource dashboard.");
