@@ -1,13 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mock Real Time Server Resource Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PulseWatch AI - Server Monitoring Dashboard</title>
+
+<!-- Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bgmain: "#0F172A",
+          card: "#1E293B",
+          primary: "#3B82F6",
+          purple: "#8B5CF6",
+          success: "#22C55E",
+          danger: "#EF4444",
+          warning: "#FACC15"
+        },
+        fontFamily: {
+          sans: ["Inter", "sans-serif"]
+        }
+      }
+    }
+  }
+</script>
+
+<!-- Google Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
 </head>
-<body>
-    <h1 class="text-3xl font-bold underline bg-red-500 text-white">Mock Real Time Server Resource Dashboard</h1>
-    <script src="index.js"></script>
+<body class="bg-bgmain text-slate-200 font-sans">
+
+<div class="flex min-h-screen">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="w-56 bg-card p-4 flex flex-col gap-2 shrink-0">
+    <div class="flex items-center gap-2 mb-6 px-2">
+      <i data-lucide="activity" class="text-primary"></i>
+      <span class="font-semibold text-lg">PulseWatch AI</span>
+    </div>
+
+    <nav class="flex flex-col gap-1 text-sm">
+      <a href="#" class="nav-link active-link" data-page="dashboard">
+        <i data-lucide="home" class="w-4 h-4"></i> Dashboard
+      </a>
+      <a href="#" class="nav-link" data-page="servers">
+        <i data-lucide="server" class="w-4 h-4"></i> Servers
+      </a>
+      <a href="#" class="nav-link" data-page="analytics">
+        <i data-lucide="bar-chart-2" class="w-4 h-4"></i> Analytics
+      </a>
+      <a href="#" class="nav-link" data-page="alerts">
+        <i data-lucide="alert-triangle" class="w-4 h-4"></i> Alerts
+      </a>
+      <a href="#" class="nav-link" data-page="logs">
+        <i data-lucide="file-text" class="w-4 h-4"></i> Logs
+      </a>
+      <a href="#" class="nav-link" data-page="settings">
+        <i data-lucide="settings" class="w-4 h-4"></i> Settings
+      </a>
+    </nav>
+
+    <button id="darkModeToggle" class="nav-link mt-auto">
+      <i data-lucide="moon" class="w-4 h-4"></i> Dark mode
+    </button>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="flex-1 p-4 flex flex-col gap-4 overflow-x-hidden">
+
+    <!-- Navbar -->
+    <header class="bg-card rounded-xl px-5 py-3 flex items-center justify-between">
+      <h1 class="font-semibold text-base">PulseWatch Dashboard</h1>
+      <div class="flex items-center gap-5 text-sm text-slate-400">
+        <span id="serverStatus" class="flex items-center gap-1 text-success">
+          <span class="w-2 h-2 rounded-full bg-success animate-pulse"></span> Healthy
+        </span>
+        <span id="currentTime"></span>
+        <button class="relative" id="notifBtn">
+          <i data-lucide="bell" class="w-5 h-5"></i>
+          <span id="alertDot" class="hidden absolute -top-1 -right-1 w-2 h-2 rounded-full bg-danger"></span>
+        </button>
+        <div class="w-8 h-8 rounded-full bg-purple flex items-center justify-center text-xs font-medium text-white">MF</div>
+      </div>
+    </header>
+
+    <!-- Overview cards -->
+    <section id="overviewCards" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3"></section>
+
+    <!-- Prediction banner -->
+    <section id="predictionBanner" class="bg-card rounded-xl px-4 py-3 text-sm flex items-center gap-2 border border-primary/30"></section>
+
+    <!-- Charts row 1 -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div class="bg-card rounded-xl p-4">
+        <p class="text-xs text-slate-400 mb-2">CPU usage</p>
+        <canvas id="cpuChart" height="90"></canvas>
+      </div>
+      <div class="bg-card rounded-xl p-4">
+        <p class="text-xs text-slate-400 mb-2">RAM usage</p>
+        <canvas id="ramChart" height="90"></canvas>
+      </div>
+    </section>
+
+    <!-- Charts row 2 -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div class="bg-card rounded-xl p-4">
+        <p class="text-xs text-slate-400 mb-2">Network graph</p>
+        <canvas id="networkChart" height="90"></canvas>
+      </div>
+      <div class="bg-card rounded-xl p-4">
+        <p class="text-xs text-slate-400 mb-2">Disk graph</p>
+        <canvas id="diskChart" height="90"></canvas>
+      </div>
+    </section>
+
+    <!-- Processes + Alerts -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+      <div class="bg-card rounded-xl p-4 lg:col-span-2">
+        <div class="flex items-center justify-between mb-3">
+          <p class="text-xs text-slate-400">Running processes</p>
+          <input id="processSearch" type="text" placeholder="Search process..."
+            class="bg-bgmain text-xs rounded-lg px-3 py-1.5 outline-none border border-slate-700 focus:border-primary">
+        </div>
+        <table class="w-full text-sm">
+          <thead class="text-slate-400 text-xs">
+            <tr class="text-left">
+              <th class="pb-2 cursor-pointer" data-sort="name">Process</th>
+              <th class="pb-2 cursor-pointer" data-sort="cpu">CPU %</th>
+              <th class="pb-2 cursor-pointer" data-sort="ram">RAM (MB)</th>
+            </tr>
+          </thead>
+          <tbody id="processTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="bg-card rounded-xl p-4">
+        <div class="flex items-center justify-between mb-3">
+          <p class="text-xs text-slate-400">Recent alerts</p>
+          <button id="exportBtn" class="text-xs text-primary hover:underline">Export report</button>
+        </div>
+        <div id="alertsList" class="flex flex-col gap-2 text-sm"></div>
+      </div>
+    </section>
+
+    <!-- System info -->
+    <section class="bg-card rounded-xl p-4">
+      <p class="text-xs text-slate-400 mb-2">System information</p>
+      <div id="systemInfo" class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm"></div>
+    </section>
+
+  </main>
+</div>
+
+<style>
+  .nav-link {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px; border-radius: 8px;
+    color: #94A3B8; font-size: 13px; transition: 0.15s;
+  }
+  .nav-link:hover { background: #334155; color: #fff; }
+  .active-link { background: #3B82F6; color: white; }
+</style>
+
+<script src="js/storage.js"></script>
+<script src="js/data-simulator.js"></script>
+<script src="js/predictions.js"></script>
+<script src="js/alerts.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/main.js"></script>
+
 </body>
 </html>
