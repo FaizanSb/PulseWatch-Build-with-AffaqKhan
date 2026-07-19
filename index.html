@@ -100,6 +100,11 @@
 
       </section>
 
+      <div id="predictionBanner"
+        class="bg-card rounded-xl px-4 py-3 text-sm mt-3 border border-blue-500/30 text-slate-300">
+        Collecting data...
+      </div>
+
       <!-- // Chart Section -->
       <div class="bg-card rounded-xl p-4 mt-4">
         <p class="text-xs text-slate-400 mb-2">CPU usage</p>
@@ -145,6 +150,41 @@
       return Math.round(next * 10) / 10;
     }
 
+    // ---- Prediction function ----
+  function predictTrend(values) {
+    const n = values.length;
+    if (n < 4) return "Collecting data for prediction...";
+
+    // x = reading number (0,1,2,3...), y = actual value
+    const xs = values.map((_, i) => i);
+    const ys = values;
+
+    const xMean = xs.reduce((a, b) => a + b, 0) / n;
+    const yMean = ys.reduce((a, b) => a + b, 0) / n;
+
+    // Slope calculate karna — ye standard linear regression formula hai
+    let num = 0, den = 0;
+    for (let i = 0; i < n; i++) {
+      num += (xs[i] - xMean) * (ys[i] - yMean);
+      den += (xs[i] - xMean) ** 2;
+    }
+    const slope = den === 0 ? 0 : num / den;
+
+    // 5 readings aage predict karo
+    const intercept = yMean - slope * xMean;
+    const predicted = Math.round(slope * (n - 1 + 5) + intercept);
+
+    if (slope > 0.8 && predicted >= 80) {
+      return `⚠ CPU rising fast — could hit ${predicted}% soon. Consider action.`;
+    } else if (slope > 0.3) {
+      return `CPU trending upward, projected ~${predicted}% shortly.`;
+    } else if (slope < -0.3) {
+      return `CPU trending downward, projected ~${predicted}% shortly.`;
+    } else {
+      return `CPU is stable around current levels.`;
+    }
+  }
+
     // Status update — apne threshold ke sath
     function setStatus(elementId, value, threshold) {
       const el = document.getElementById(elementId);
@@ -157,36 +197,36 @@
       }
     }
 
-     // ---- Reusable chart-maker function ----
-  function makeChart(canvasId, color) {
-    const ctx = document.getElementById(canvasId).getContext("2d");
-    return new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: [],
-        datasets: [{
-          data: [],
-          borderColor: color,
-          backgroundColor: color + "22",
-          borderWidth: 2,
-          pointRadius: 0,
-          tension: 0.35,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: { x: { display: false }, y: { display: false } },
-        plugins: { legend: { display: false } }
-      }
-    });
-  }
+    // ---- Reusable chart-maker function ----
+    function makeChart(canvasId, color) {
+      const ctx = document.getElementById(canvasId).getContext("2d");
+      return new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [{
+            data: [],
+            borderColor: color,
+            backgroundColor: color + "22",
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.35,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: { x: { display: false }, y: { display: false } },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
 
-  // Ab sirf 1 line se ek chart banta hai
-  const cpuChart = makeChart("cpuChart", "#3B82F6");
-  const ramChart = makeChart("ramChart", "#8B5CF6");
-  const networkChart = makeChart("networkChart", "#22C55E");
-  const diskChart = makeChart("diskChart", "#EF4444");
+    // Ab sirf 1 line se ek chart banta hai
+    const cpuChart = makeChart("cpuChart", "#3B82F6");
+    const ramChart = makeChart("ramChart", "#8B5CF6");
+    const networkChart = makeChart("networkChart", "#22C55E");
+    const diskChart = makeChart("diskChart", "#EF4444");
 
     function updateCards() {
       cpu = randomWalk(cpu, 10, 95, 6);
@@ -209,32 +249,34 @@
       setStatus("tempStatus", temp, 60);
 
       // History update — sab metrics ke liye
-    history.cpu.push(cpu);
-    history.ram.push(ram);
-    history.network.push(network);
-    history.disk.push(disk);
+      history.cpu.push(cpu);
+      history.ram.push(ram);
+      history.network.push(network);
+      history.disk.push(disk);
 
-    Object.keys(history).forEach(key => {
-      if (history[key].length > 20) history[key].shift();
-    });
+      Object.keys(history).forEach(key => {
+        if (history[key].length > 20) history[key].shift();
+      });
 
-    // Charts update — reusable loop se
-    cpuChart.data.labels = history.cpu.map((_, i) => i);
-    cpuChart.data.datasets[0].data = history.cpu;
-    cpuChart.update("none");
+      document.getElementById("predictionBanner").textContent = predictTrend(history.cpu);
 
-    ramChart.data.labels = history.ram.map((_, i) => i);
-    ramChart.data.datasets[0].data = history.ram;
-    ramChart.update("none");
+      // Charts update — reusable loop se
+      cpuChart.data.labels = history.cpu.map((_, i) => i);
+      cpuChart.data.datasets[0].data = history.cpu;
+      cpuChart.update("none");
 
-    networkChart.data.labels = history.network.map((_, i) => i);
-    networkChart.data.datasets[0].data = history.network;
-    networkChart.update("none");
+      ramChart.data.labels = history.ram.map((_, i) => i);
+      ramChart.data.datasets[0].data = history.ram;
+      ramChart.update("none");
 
-    diskChart.data.labels = history.disk.map((_, i) => i);
-    diskChart.data.datasets[0].data = history.disk;
-    diskChart.update("none");
-  }
+      networkChart.data.labels = history.network.map((_, i) => i);
+      networkChart.data.datasets[0].data = history.network;
+      networkChart.update("none");
+
+      diskChart.data.labels = history.disk.map((_, i) => i);
+      diskChart.data.datasets[0].data = history.disk;
+      diskChart.update("none");
+    }
 
     // Har 2000ms (2 second) mein updateCards() chalao
     setInterval(updateCards, 2000);
