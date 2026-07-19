@@ -63,37 +63,37 @@
 
         <div class="bg-card rounded-xl p-3 text-center">
           <p class="text-xs text-slate-400">CPU</p>
-          <p class="text-lg font-medium">45%</p>
+          <p id="cpuValue" class="text-lg font-medium">45%</p>
           <p class="text-[10px] text-green-400">Healthy</p>
         </div>
 
         <div class="bg-card rounded-xl p-3 text-center">
           <p class="text-xs text-slate-400">RAM</p>
-          <p class="text-lg font-medium">68%</p>
+          <p id="ramValue" class="text-lg font-medium">68%</p>
           <p class="text-[10px] text-yellow-400">Warning</p>
         </div>
 
         <div class="bg-card rounded-xl p-3 text-center">
           <p class="text-xs text-slate-400">Disk</p>
-          <p class="text-lg font-medium">72%</p>
+          <p id="diskValue" class="text-lg font-medium">72%</p>
           <p class="text-[10px] text-green-400">Healthy</p>
         </div>
 
         <div class="bg-card rounded-xl p-3 text-center">
           <p class="text-xs text-slate-400">Network</p>
-          <p class="text-lg font-medium">125 Mbps</p>
+          <p id="networkValue" class="text-lg font-medium">125 Mbps</p>
           <p class="text-[10px] text-blue-400">Stable</p>
         </div>
 
         <div class="bg-card rounded-xl p-3 text-center">
           <p class="text-xs text-slate-400">Temp</p>
-          <p class="text-lg font-medium">46°C</p>
+          <p id="tempValue" class="text-lg font-medium">46°C</p>
           <p class="text-[10px] text-green-400">Normal</p>
         </div>
 
         <div class="bg-card rounded-xl p-3 text-center">
           <p class="text-xs text-slate-400">Uptime</p>
-          <p class="text-lg font-medium">5 Days</p>
+          <p id="uptimeValue" class="text-lg font-medium">5 Days</p>
           <p class="text-[10px] text-purple-400">Stable</p>
         </div>
 
@@ -102,6 +102,32 @@
     </main>
 
   </div>
+
+  <script>
+    // Starting values
+    let cpu = 45;
+    let ram = 68;
+
+    // Random walk function — value ko chhota sa change deta hai, limits ke andar
+    function randomWalk(value, min, max, step) {
+      let change = (Math.random() - 0.5) * step;
+      let next = value + change;
+      if (next < min) next = min;
+      if (next > max) next = max;
+      return Math.round(next * 10) / 10; // 1 decimal tak round
+    }
+
+    function updateCards() {
+      cpu = randomWalk(cpu, 10, 95, 6);
+      ram = randomWalk(ram, 20, 95, 4);
+
+      document.getElementById("cpuValue").textContent = cpu + "%";
+      document.getElementById("ramValue").textContent = ram + "%";
+    }
+
+    // Har 2000ms (2 second) mein updateCards() chalao
+    setInterval(updateCards, 2000);
+  </script>
 
 </body>
 
