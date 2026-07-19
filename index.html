@@ -127,6 +127,13 @@
         <canvas id="diskChart" height="80"></canvas>
       </div>
 
+      <div class="bg-card rounded-xl p-4 mt-3">
+        <p class="text-xs text-slate-400 mb-3">Recent alerts</p>
+        <div id="alertsList" class="flex flex-col gap-2 text-sm">
+          <p class="text-slate-500 text-xs">No alerts yet.</p>
+        </div>
+      </div>
+
     </main>
 
   </div>
@@ -140,6 +147,43 @@
     let temp = 46;
     let uptime = 5;
     let history = { cpu: [], ram: [], network: [], disk: [] };
+    let alertLog = []; // yahan sab alerts store honge
+
+
+    // Ek naya alert list mein daalta hai
+    function pushAlert(type, message) {
+      const alert = {
+        type: type,       // "danger" ya "warning"
+        message: message,
+        time: new Date().toLocaleTimeString()
+      };
+      alertLog.unshift(alert);          // sabse upar add karo
+      alertLog = alertLog.slice(0, 10); // sirf last 10 alerts rakho
+      renderAlerts();
+    }
+
+    // Alerts ko HTML mein dikhata hai
+    function renderAlerts() {
+      const list = document.getElementById("alertsList");
+      if (alertLog.length === 0) {
+        list.innerHTML = `<p class="text-slate-500 text-xs">No alerts yet.</p>`;
+        return;
+      }
+      list.innerHTML = alertLog.map(a => `
+      <div class="flex items-center justify-between text-xs bg-bgmain rounded-lg px-3 py-2">
+        <span class="${a.type === 'danger' ? 'text-red-400' : 'text-yellow-400'}">● ${a.message}</span>
+        <span class="text-slate-500">${a.time}</span>
+      </div>
+    `).join("");
+    }
+
+    // Metrics check karke decide karta hai alert banana hai ya nahi
+    function checkAlerts() {
+      if (cpu > 80) pushAlert("danger", `High CPU usage: ${cpu}%`);
+      if (ram > 85) pushAlert("warning", `Memory warning: ${ram}%`);
+      if (disk > 90) pushAlert("danger", `Disk critical: ${disk}%`);
+      if (temperature > 65) pushAlert("warning", `Temperature high: ${temperature}°C`);
+    }
 
     // Random walk function — value ko chhota sa change deta hai, limits ke andar
     function randomWalk(value, min, max, step) {
@@ -151,39 +195,39 @@
     }
 
     // ---- Prediction function ----
-  function predictTrend(values) {
-    const n = values.length;
-    if (n < 4) return "Collecting data for prediction...";
+    function predictTrend(values) {
+      const n = values.length;
+      if (n < 4) return "Collecting data for prediction...";
 
-    // x = reading number (0,1,2,3...), y = actual value
-    const xs = values.map((_, i) => i);
-    const ys = values;
+      // x = reading number (0,1,2,3...), y = actual value
+      const xs = values.map((_, i) => i);
+      const ys = values;
 
-    const xMean = xs.reduce((a, b) => a + b, 0) / n;
-    const yMean = ys.reduce((a, b) => a + b, 0) / n;
+      const xMean = xs.reduce((a, b) => a + b, 0) / n;
+      const yMean = ys.reduce((a, b) => a + b, 0) / n;
 
-    // Slope calculate karna — ye standard linear regression formula hai
-    let num = 0, den = 0;
-    for (let i = 0; i < n; i++) {
-      num += (xs[i] - xMean) * (ys[i] - yMean);
-      den += (xs[i] - xMean) ** 2;
+      // Slope calculate karna — ye standard linear regression formula hai
+      let num = 0, den = 0;
+      for (let i = 0; i < n; i++) {
+        num += (xs[i] - xMean) * (ys[i] - yMean);
+        den += (xs[i] - xMean) ** 2;
+      }
+      const slope = den === 0 ? 0 : num / den;
+
+      // 5 readings aage predict karo
+      const intercept = yMean - slope * xMean;
+      const predicted = Math.round(slope * (n - 1 + 5) + intercept);
+
+      if (slope > 0.8 && predicted >= 80) {
+        return `⚠ CPU rising fast — could hit ${predicted}% soon. Consider action.`;
+      } else if (slope > 0.3) {
+        return `CPU trending upward, projected ~${predicted}% shortly.`;
+      } else if (slope < -0.3) {
+        return `CPU trending downward, projected ~${predicted}% shortly.`;
+      } else {
+        return `CPU is stable around current levels.`;
+      }
     }
-    const slope = den === 0 ? 0 : num / den;
-
-    // 5 readings aage predict karo
-    const intercept = yMean - slope * xMean;
-    const predicted = Math.round(slope * (n - 1 + 5) + intercept);
-
-    if (slope > 0.8 && predicted >= 80) {
-      return `⚠ CPU rising fast — could hit ${predicted}% soon. Consider action.`;
-    } else if (slope > 0.3) {
-      return `CPU trending upward, projected ~${predicted}% shortly.`;
-    } else if (slope < -0.3) {
-      return `CPU trending downward, projected ~${predicted}% shortly.`;
-    } else {
-      return `CPU is stable around current levels.`;
-    }
-  }
 
     // Status update — apne threshold ke sath
     function setStatus(elementId, value, threshold) {
@@ -276,6 +320,8 @@
       diskChart.data.labels = history.disk.map((_, i) => i);
       diskChart.data.datasets[0].data = history.disk;
       diskChart.update("none");
+
+      checkAlerts();
     }
 
     // Har 2000ms (2 second) mein updateCards() chalao
