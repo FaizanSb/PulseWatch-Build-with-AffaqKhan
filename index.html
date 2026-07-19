@@ -18,6 +18,7 @@
       }
     }
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 
 <body class="bg-bgmain text-white">
@@ -99,6 +100,11 @@
 
       </section>
 
+      <div class="bg-card rounded-xl p-4 mt-4">
+        <p class="text-xs text-slate-400 mb-2">CPU usage</p>
+        <canvas id="cpuChart" height="80"></canvas>
+      </div>
+
     </main>
 
   </div>
@@ -111,6 +117,7 @@
     let network = 125;
     let temp = 46;
     let uptime = 5;
+    let cpuHistory = []; // yahan last readings store hongi
 
     // Random walk function — value ko chhota sa change deta hai, limits ke andar
     function randomWalk(value, min, max, step) {
@@ -123,15 +130,38 @@
 
     // Status update — apne threshold ke sath
     function setStatus(elementId, value, threshold) {
-    const el = document.getElementById(elementId);
-    if (value > threshold) {
-      el.textContent = "Warning";
-      el.className = "text-[10px] text-yellow-400";
-    } else {
-      el.textContent = "Healthy";
-      el.className = "text-[10px] text-green-400";
+      const el = document.getElementById(elementId);
+      if (value > threshold) {
+        el.textContent = "Warning";
+        el.className = "text-[10px] text-yellow-400";
+      } else {
+        el.textContent = "Healthy";
+        el.className = "text-[10px] text-green-400";
+      }
     }
-  }
+
+    // ---- Chart.js setup ----
+    const cpuCtx = document.getElementById("cpuChart").getContext("2d");
+    const cpuChart = new Chart(cpuCtx, {
+      type: "line",
+      data: {
+        labels: [],       // x-axis (hum khali rakhenge, time nahi dikhana)
+        datasets: [{
+          data: [],       // y-axis values — yahan cpuHistory jayegi
+          borderColor: "#3B82F6",
+          backgroundColor: "#3B82F622",
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.35,  // line ko smooth curve deta hai
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { x: { display: false }, y: { display: false } },
+        plugins: { legend: { display: false } }
+      }
+    });
 
     function updateCards() {
       cpu = randomWalk(cpu, 10, 95, 6);
@@ -147,12 +177,22 @@
       document.getElementById("tempValue").textContent = temp + "°C";
 
       // Status update — apne threshold ke sath
-      setStatus("cpuStatus", cpu, 75);
+      setStatus("cpuStatus", cpu, 70);
       setStatus("ramStatus", ram, 85);
       setStatus("diskStatus", disk, 90);
       setStatus("networkStatus", network, 100);
       setStatus("tempStatus", temp, 60);
+
+      // ---- History update ----
+      cpuHistory.push(cpu);
+      if (cpuHistory.length > 20) cpuHistory.shift(); // sirf last 20 rakho
+
+      // ---- Chart update ----
+      cpuChart.data.labels = cpuHistory.map((_, i) => i); // x-axis labels (0,1,2,...)
+      cpuChart.data.datasets[0].data = cpuHistory; // y-axis data
+      cpuChart.update("none"); // "none" = animation skip, smooth dikhega
     }
+
     // Har 2000ms (2 second) mein updateCards() chalao
     setInterval(updateCards, 2000);
   </script>
