@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>PulseWatch AI</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          bgmain: "#0F172A",
-          card: "#1E293B",
-          primary: "#3B82F6"
+  <meta charset="UTF-8">
+  <title>PulseWatch AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bgmain: "#0F172A",
+            card: "#1E293B",
+            primary: "#3B82F6"
+          }
         }
       }
     }
-  }
-</script>
+  </script>
 </head>
+
 <body class="bg-bgmain text-white">
 
   <div class="flex min-h-screen">
@@ -35,11 +37,31 @@
 
     <!-- MAIN CONTENT -->
     <main class="flex-1 p-6">
-      <h1 class="text-xl font-bold">Main content area</h1>
-      <p class="text-slate-400 text-sm mt-2">Ye jagah baaki sab kuch hold karegi — navbar, cards, charts.</p>
+
+      <!-- NAVBAR -->
+      <header class="bg-card rounded-xl px-5 py-3 flex items-center justify-between">
+        <h1 class="font-semibold text-base">PulseWatch Dashboard</h1>
+
+        <div class="flex items-center gap-5 text-sm text-slate-400">
+          <span class="flex items-center gap-1 text-green-400">
+            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+            Healthy
+          </span>
+
+          <span id="currentTime">10:42 AM</span>
+
+          <span>🔔</span>
+
+          <div class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-xs text-white">
+            MF
+          </div>
+        </div>
+      </header>
+
     </main>
 
   </div>
 
 </body>
+
 </html>
