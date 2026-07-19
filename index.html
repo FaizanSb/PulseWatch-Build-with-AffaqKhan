@@ -107,6 +107,10 @@
     // Starting values
     let cpu = 45;
     let ram = 68;
+    let disk = 72;
+    let network = 125;
+    let temp = 46;
+    let uptime = 5;
 
     // Random walk function — value ko chhota sa change deta hai, limits ke andar
     function randomWalk(value, min, max, step) {
@@ -121,8 +125,21 @@
       cpu = randomWalk(cpu, 10, 95, 6);
       ram = randomWalk(ram, 20, 95, 4);
 
+      // Disk, Network, Temp, Uptime ko random walk nahi karega
+      disk = randomWalk(disk, 30, 98, 1.5);       // disk slowly badalta hai (step chhota)
+      network = randomWalk(network, 20, 300, 25); // network zyada fluctuate karta hai
+      temp = randomWalk(temp, 30, 75, 2);         // temp zyada fluctuate karta hai
+      uptime = randomWalk(uptime, 1, 10, 0.5);    // uptime zyada fluctuate karta hai
+
       document.getElementById("cpuValue").textContent = cpu + "%";
       document.getElementById("ramValue").textContent = ram + "%";
+      document.getElementById("diskValue").textContent = disk + "%";
+      document.getElementById("networkValue").textContent = network + " Mbps";
+      document.getElementById("tempValue").textContent = temp + "°C";
+      document.getElementById("uptimeValue").textContent = uptime + " Days";
+
+      // Disk, Network, Temp, Uptime ko random walk nahi karega
+
     }
 
     // Har 2000ms (2 second) mein updateCards() chalao
