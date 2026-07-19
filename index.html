@@ -64,37 +64,37 @@
         <div class="bg-card rounded-xl p-3 text-center">
           <p class="text-xs text-slate-400">CPU</p>
           <p id="cpuValue" class="text-lg font-medium">45%</p>
-          <p class="text-[10px] text-green-400">Healthy</p>
+          <p id="cpuStatus" class="text-[10px] text-green-400">Healthy</p>
         </div>
 
         <div class="bg-card rounded-xl p-3 text-center">
           <p class="text-xs text-slate-400">RAM</p>
           <p id="ramValue" class="text-lg font-medium">68%</p>
-          <p class="text-[10px] text-yellow-400">Warning</p>
+          <p id="ramStatus" class="text-[10px] text-yellow-400">Warning</p>
         </div>
 
         <div class="bg-card rounded-xl p-3 text-center">
           <p class="text-xs text-slate-400">Disk</p>
           <p id="diskValue" class="text-lg font-medium">72%</p>
-          <p class="text-[10px] text-green-400">Healthy</p>
+          <p id="diskStatus" class="text-[10px] text-green-400">Healthy</p>
         </div>
 
         <div class="bg-card rounded-xl p-3 text-center">
           <p class="text-xs text-slate-400">Network</p>
           <p id="networkValue" class="text-lg font-medium">125 Mbps</p>
-          <p class="text-[10px] text-blue-400">Stable</p>
+          <p id="networkStatus" class="text-[10px] text-blue-400">Stable</p>
         </div>
 
         <div class="bg-card rounded-xl p-3 text-center">
           <p class="text-xs text-slate-400">Temp</p>
           <p id="tempValue" class="text-lg font-medium">46°C</p>
-          <p class="text-[10px] text-green-400">Normal</p>
+          <p id="tempStatus" class="text-[10px] text-green-400">Normal</p>
         </div>
 
         <div class="bg-card rounded-xl p-3 text-center">
           <p class="text-xs text-slate-400">Uptime</p>
           <p id="uptimeValue" class="text-lg font-medium">5 Days</p>
-          <p class="text-[10px] text-purple-400">Stable</p>
+          <p id="uptimeStatus" class="text-[10px] text-purple-400">Stable</p>
         </div>
 
       </section>
@@ -105,7 +105,7 @@
 
   <script>
     // Starting values
-    let cpu = 45;
+    let cpu = 70;
     let ram = 68;
     let disk = 72;
     let network = 125;
@@ -118,30 +118,41 @@
       let next = value + change;
       if (next < min) next = min;
       if (next > max) next = max;
-      return Math.round(next * 10) / 10; // 1 decimal tak round
+      return Math.round(next * 10) / 10;
     }
+
+    // Status update — apne threshold ke sath
+    function setStatus(elementId, value, threshold) {
+    const el = document.getElementById(elementId);
+    if (value > threshold) {
+      el.textContent = "Warning";
+      el.className = "text-[10px] text-yellow-400";
+    } else {
+      el.textContent = "Healthy";
+      el.className = "text-[10px] text-green-400";
+    }
+  }
 
     function updateCards() {
       cpu = randomWalk(cpu, 10, 95, 6);
       ram = randomWalk(ram, 20, 95, 4);
-
-      // Disk, Network, Temp, Uptime ko random walk nahi karega
-      disk = randomWalk(disk, 30, 98, 1.5);       // disk slowly badalta hai (step chhota)
-      network = randomWalk(network, 20, 300, 25); // network zyada fluctuate karta hai
-      temp = randomWalk(temp, 30, 75, 2);         // temp zyada fluctuate karta hai
-      uptime = randomWalk(uptime, 1, 10, 0.5);    // uptime zyada fluctuate karta hai
+      disk = randomWalk(disk, 30, 98, 1.5);
+      network = randomWalk(network, 20, 300, 25);
+      temp = randomWalk(temp, 30, 75, 2);
 
       document.getElementById("cpuValue").textContent = cpu + "%";
       document.getElementById("ramValue").textContent = ram + "%";
       document.getElementById("diskValue").textContent = disk + "%";
       document.getElementById("networkValue").textContent = network + " Mbps";
       document.getElementById("tempValue").textContent = temp + "°C";
-      document.getElementById("uptimeValue").textContent = uptime + " Days";
 
-      // Disk, Network, Temp, Uptime ko random walk nahi karega
-
+      // Status update — apne threshold ke sath
+      setStatus("cpuStatus", cpu, 75);
+      setStatus("ramStatus", ram, 85);
+      setStatus("diskStatus", disk, 90);
+      setStatus("networkStatus", network, 100);
+      setStatus("tempStatus", temp, 60);
     }
-
     // Har 2000ms (2 second) mein updateCards() chalao
     setInterval(updateCards, 2000);
   </script>
