@@ -1,0 +1,18 @@
+/* Smooth scroll when clicking sidebar links (Dashboard/Servers/Alerts) */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Thin, dark-themed scrollbar so it matches the dashboard look */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0F172A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
