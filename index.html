@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 
 <head>
   <meta charset="UTF-8">
@@ -28,7 +28,8 @@
   <div class="flex min-h-screen">
 
     <!-- SIDEBAR -->
-    <aside id="sidebar" class="w-56 bg-card p-4 fixed md:static h-screen -translate-x-full md:translate-x-0 transition-transform z-20">
+    <aside id="sidebar"
+      class="fixed top-0 left-0 w-56 h-screen bg-card p-4 transition-transform -translate-x-full md:translate-x-0 z-20">
       <h2 class="font-semibold text-lg mb-4">PulseWatch AI</h2>
       <nav class="flex flex-col gap-1 text-sm">
         <a href="#dashboardSection" class="nav-link" data-section="dashboardSection">🏠 Dashboard</a>
@@ -38,7 +39,7 @@
     </aside>
 
     <!-- MAIN CONTENT -->
-    <main class="flex-1 p-4 md:p-6">
+    <main class="flex-1 p-4 md:p-6 md:ml-56">
 
       <!-- NAVBAR -->
       <header class="bg-card rounded-xl px-4 md:px-5 py-3 flex items-center justify-between">

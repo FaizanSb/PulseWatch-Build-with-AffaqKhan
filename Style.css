@@ -1,9 +1,21 @@
-/* Smooth scroll when clicking sidebar links (Dashboard/Servers/Alerts) */
+/* ================================
+   GLOBAL
+================================ */
+
 html {
   scroll-behavior: smooth;
 }
 
-/* Thin, dark-themed scrollbar so it matches the dashboard look */
+body {
+  background: #0F172A;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+/* ================================
+   SCROLLBAR
+================================ */
+
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -13,77 +25,150 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 4px;
+  background: #475569;
+  border-radius: 10px;
 }
 
-/* ============ SIDEBAR NAV LINKS ============ */
-/* Base style — sab links ka default look */
+::-webkit-scrollbar-thumb:hover {
+  background: #64748B;
+}
+
+/* ================================
+   SIDEBAR
+================================ */
+
+#sidebar {
+  border-right: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+/* ================================
+   SIDEBAR LINKS
+================================ */
+
 .nav-link {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  color: #94A3B8;              /* slate-400 jaisa muted color */
+  gap: 10px;
+
+  width: 100%;
+
+  padding: 12px 14px;
+  margin-bottom: 6px;
+
+  border-radius: 10px;
+
+  color: #94A3B8;
   text-decoration: none;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+
+  transition: all .25s ease;
 }
 
-/* Mouse le jaane par — halka background aur text white ho jata hai */
 .nav-link:hover {
-  background-color: #334155;   /* card se thora lighter shade */
-  color: #ffffff;
-  transform: translateX(2px);  /* thora sa right shift — "clickable" feel deta hai */
+  background: rgba(59, 130, 246, .15);
+  color: white;
+  transform: translateX(4px);
 }
 
-/* Jo section abhi screen pe visible hai, uska link ye class le lega (JS se) */
+/* Active Link */
+
 .nav-link.active-link {
-  background-color: #3B82F6;   /* primary blue */
-  color: #ffffff;
+  background: #3B82F6;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, .35);
 }
 
-/* Active link pe hover ho to bhi blue hi rahe, halka darker */
 .nav-link.active-link:hover {
-  background-color: #2563EB;
+  background: #2563EB;
   transform: none;
 }
 
-/* ============ CARD HOVER EFFECTS ============ */
-/* Overview cards (CPU, RAM, Disk...) */
+/* ================================
+   HEADER
+================================ */
+
+header {
+  transition: box-shadow .25s ease;
+}
+
+header:hover {
+  box-shadow: 0 10px 25px rgba(0,0,0,.25);
+}
+
+/* ================================
+   OVERVIEW CARDS
+================================ */
+
 .stat-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  transition: all .25s ease;
 }
 
 .stat-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
-  background-color: #24324a;
+  transform: translateY(-4px);
+  background: #24324A;
+  box-shadow: 0 10px 22px rgba(59,130,246,.18);
 }
 
-/* Chart boxes */
+/* ================================
+   CHART CARDS
+================================ */
+
 .chart-card {
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition: all .25s ease;
 }
 
 .chart-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(0,0,0,.35);
 }
 
-/* ============ FADE-IN ON LOAD ============ */
-/* Jab page load ho, sections halke se fade+slide in hon (ek dafa hi chalta hai) */
-section {
-  animation: fadeSlideIn 0.5s ease both;
+/* ================================
+   PREDICTION BANNER
+================================ */
+
+#predictionBanner {
+  transition: all .25s ease;
 }
+
+#predictionBanner:hover {
+  border-color: #3B82F6;
+}
+
+/* ================================
+   SECTIONS
+================================ */
+
+section {
+  scroll-margin-top: 25px;
+  animation: fadeSlideIn .5s ease both;
+}
+
+/* ================================
+   ANIMATION
+================================ */
 
 @keyframes fadeSlideIn {
+
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
+
+}
+
+/* ================================
+   MOBILE
+================================ */
+
+@media (max-width:768px){
+
+  #sidebar{
+    box-shadow: 8px 0 30px rgba(0,0,0,.35);
+  }
+
 }
