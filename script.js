@@ -207,6 +207,45 @@ document.getElementById("menuBtn").addEventListener("click", () => {
   document.getElementById("sidebar").classList.toggle("-translate-x-full");
 });
 
+// ============ SCROLL-SPY (highlight active sidebar link) ============
+// Intersection Observer browser ko batata hai "ye element abhi screen pe
+// dikh raha hai ya nahi" — bina humein manually scroll position calculate
+// karne ki zaroorat ke. Jab koi section screen ke beech mein aata hai,
+// hum us se match karne wala sidebar link "active-link" bana dete hain.
+
+const navLinks = document.querySelectorAll(".nav-link");
+
+function setActiveLink(sectionId) {
+  navLinks.forEach(link => {
+    if (link.dataset.section === sectionId) {
+      link.classList.add("active-link");
+    } else {
+      link.classList.remove("active-link");
+    }
+  });
+}
+
+const sectionObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach(entry => {
+      // isIntersecting = true jab section screen ke observe-window mein aa jaye
+      if (entry.isIntersecting) {
+        setActiveLink(entry.target.id);
+      }
+    });
+  },
+  {
+    // rootMargin screen ke top/bottom se thora area "kaat" deta hai —
+    // isse section tab "active" mana jayega jab wo screen ke upper-mid area mein ho,
+    // sirf ek pixel dikhne pe nahi
+    rootMargin: "-20% 0px -70% 0px"
+  }
+);
+
+document.querySelectorAll("main section").forEach(section => {
+  sectionObserver.observe(section);
+});
+
 // ============ INIT ============
 
 if ("Notification" in window && Notification.permission === "default") {

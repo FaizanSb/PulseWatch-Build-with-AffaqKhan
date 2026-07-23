@@ -28,12 +28,12 @@
   <div class="flex min-h-screen">
 
     <!-- SIDEBAR -->
-    <aside id="sidebar" class="w-56 bg-card p-4 fixed md:static h-full -translate-x-full md:translate-x-0 transition-transform z-20">
+    <aside id="sidebar" class="w-56 bg-card p-4 fixed md:static h-screen -translate-x-full md:translate-x-0 transition-transform z-20">
       <h2 class="font-semibold text-lg mb-4">PulseWatch AI</h2>
-      <nav class="flex flex-col gap-2 text-sm text-slate-400">
-        <a href="#dashboardSection" class="hover:text-white">🏠 Dashboard</a>
-        <a href="#serversSection" class="hover:text-white">🖥 Servers</a>
-        <a href="#alertsSection" class="hover:text-white">⚠ Alerts</a>
+      <nav class="flex flex-col gap-1 text-sm">
+        <a href="#dashboardSection" class="nav-link" data-section="dashboardSection">🏠 Dashboard</a>
+        <a href="#serversSection" class="nav-link" data-section="serversSection">🖥 Servers</a>
+        <a href="#alertsSection" class="nav-link" data-section="alertsSection">⚠ Alerts</a>
       </nav>
     </aside>
 
@@ -67,37 +67,37 @@
         <!-- OVERVIEW CARDS -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mt-4">
 
-          <div class="bg-card rounded-xl p-3 text-center">
+          <div class="bg-card rounded-xl p-3 text-center stat-card">
             <p class="text-xs text-slate-400">CPU</p>
             <p id="cpuValue" class="text-lg font-medium">45%</p>
             <p id="cpuStatus" class="text-[10px] text-green-400">Healthy</p>
           </div>
 
-          <div class="bg-card rounded-xl p-3 text-center">
+          <div class="bg-card rounded-xl p-3 text-center stat-card">
             <p class="text-xs text-slate-400">RAM</p>
             <p id="ramValue" class="text-lg font-medium">68%</p>
             <p id="ramStatus" class="text-[10px] text-yellow-400">Warning</p>
           </div>
 
-          <div class="bg-card rounded-xl p-3 text-center">
+          <div class="bg-card rounded-xl p-3 text-center stat-card">
             <p class="text-xs text-slate-400">Disk</p>
             <p id="diskValue" class="text-lg font-medium">72%</p>
             <p id="diskStatus" class="text-[10px] text-green-400">Healthy</p>
           </div>
 
-          <div class="bg-card rounded-xl p-3 text-center">
+          <div class="bg-card rounded-xl p-3 text-center stat-card">
             <p class="text-xs text-slate-400">Network</p>
             <p id="networkValue" class="text-lg font-medium">125 Mbps</p>
             <p id="networkStatus" class="text-[10px] text-blue-400">Stable</p>
           </div>
 
-          <div class="bg-card rounded-xl p-3 text-center">
+          <div class="bg-card rounded-xl p-3 text-center stat-card">
             <p class="text-xs text-slate-400">Temp</p>
             <p id="tempValue" class="text-lg font-medium">46°C</p>
             <p id="tempStatus" class="text-[10px] text-green-400">Normal</p>
           </div>
 
-          <div class="bg-card rounded-xl p-3 text-center">
+          <div class="bg-card rounded-xl p-3 text-center stat-card">
             <p class="text-xs text-slate-400">Uptime</p>
             <p id="uptimeValue" class="text-lg font-medium">5 Days</p>
             <p class="text-[10px] text-purple-400">Stable</p>
@@ -112,23 +112,23 @@
         </div>
 
         <!-- CHARTS -->
-        <div class="bg-card rounded-xl p-4 mt-4">
+        <div class="bg-card rounded-xl p-4 mt-4 chart-card">
           <p class="text-xs text-slate-400 mb-2">CPU usage</p>
           <canvas id="cpuChart" height="80"></canvas>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-          <div class="bg-card rounded-xl p-4">
+          <div class="bg-card rounded-xl p-4 chart-card">
             <p class="text-xs text-slate-400 mb-2">RAM usage</p>
             <canvas id="ramChart" height="80"></canvas>
           </div>
-          <div class="bg-card rounded-xl p-4">
+          <div class="bg-card rounded-xl p-4 chart-card">
             <p class="text-xs text-slate-400 mb-2">Network</p>
             <canvas id="networkChart" height="80"></canvas>
           </div>
         </div>
 
-        <div class="bg-card rounded-xl p-4 mt-3">
+        <div class="bg-card rounded-xl p-4 mt-3 chart-card">
           <p class="text-xs text-slate-400 mb-2">Disk usage</p>
           <canvas id="diskChart" height="80"></canvas>
         </div>
@@ -145,7 +145,7 @@
 
       <!-- ============ ALERTS SECTION ============ -->
       <section id="alertsSection" class="mt-6">
-        <div class="bg-card rounded-xl p-4">
+        <div class="bg-card rounded-xl p-4 chart-card">
           <p class="text-xs text-slate-400 mb-3">Recent alerts</p>
           <div id="alertsList" class="flex flex-col gap-2 text-sm">
             <p class="text-slate-500 text-xs">No alerts yet.</p>
