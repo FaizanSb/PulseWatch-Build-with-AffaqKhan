@@ -257,3 +257,30 @@ setInterval(updateClock, 1000);
 
 updateCards(); // run once immediately so page isn't empty on load
 setInterval(updateCards, 2000);
+
+// ============ THEME TOGGLE ============
+
+const themeToggle = document.getElementById("themeToggle");
+const htmlEl = document.documentElement; // <html> tag
+
+function applyTheme(theme) {
+  if (theme === "light") {
+    htmlEl.classList.add("light-theme");
+    themeToggle.textContent = "☀️";
+  } else {
+    htmlEl.classList.remove("light-theme");
+    themeToggle.textContent = "🌙";
+  }
+}
+
+// Page load pe: pehle se saved theme yaad rakho (localStorage)
+const savedTheme = localStorage.getItem("pulsewatch-theme") || "dark";
+applyTheme(savedTheme);
+
+// Button click pe: mood switch karo aur yaad rakh lo
+themeToggle.addEventListener("click", () => {
+  const isLight = htmlEl.classList.contains("light-theme");
+  const newTheme = isLight ? "dark" : "light";
+  applyTheme(newTheme);
+  localStorage.setItem("pulsewatch-theme", newTheme);
+});

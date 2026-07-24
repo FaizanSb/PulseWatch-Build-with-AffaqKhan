@@ -1,3 +1,26 @@
+:root{
+
+    --bg:#0F172A;
+
+    --card:#1E293B;
+
+    --text:#ffffff;
+
+    --primary:#3B82F6;
+
+}
+
+.light-theme{
+
+    --bg:#abbdce;
+
+    --card:#ffffff;
+
+    --text:#0F172A;
+
+    --primary:#2563EB;
+
+}
 /* ================================
    GLOBAL
 ================================ */
@@ -7,8 +30,8 @@ html {
 }
 
 body {
-  background: #0F172A;
-  color: #fff;
+  background: var(--bg);
+  color: var(--text);
   overflow-x: hidden;
 }
 
@@ -21,16 +44,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0F172A;
+  background: var(--bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #475569;
+  background: var(--primary);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #64748B;
+  background: var(--primary);
 }
 
 /* ================================
@@ -57,7 +80,7 @@ body {
 
   border-radius: 10px;
 
-  color: #94A3B8;
+  color: var(--text);
   text-decoration: none;
 
   transition: all .25s ease;
@@ -65,15 +88,15 @@ body {
 
 .nav-link:hover {
   background: rgba(59, 130, 246, .15);
-  color: white;
+  color: var(--text);
   transform: translateX(4px);
 }
 
 /* Active Link */
 
 .nav-link.active-link {
-  background: #3B82F6;
-  color: white;
+  background: var(--primary);
+  color: var(--text);
   font-weight: 600;
   box-shadow: 0 4px 14px rgba(59, 130, 246, .35);
 }
