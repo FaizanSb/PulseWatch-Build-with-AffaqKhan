@@ -3,8 +3,9 @@
     --card:#1E293B;
     --text:#ffffff;
     --primary:#3B82F6;
-    --text-secondary:#94A3B8;   /* NAYA — labels/muted text ke liye */
-    --border: rgba(148, 163, 184, 0.12);  /* NAYA — card boundary */
+    --text-secondary:#94A3B8;   /* labels/muted text ke liye */
+    --border: rgba(148, 163, 184, 0.12);  /* card boundary */
+    --hover: #24324A;   /* dark mode ka hover shade */
 }
 
 .light-theme{
@@ -12,9 +13,11 @@
     --card:#ffffff;
     --text:#0F172A;
     --primary:#2563EB;
-    --text-secondary:#475569;   /* NAYA — dark-ish gray, light bg pe readable */
-    --border: rgba(15, 23, 42, 0.1);  /* NAYA */
+    --text-secondary:#475569;   /* dark-ish gray, light bg pe readable */
+    --border: rgba(15, 23, 42, 0.1);
+    --hover: #F1F5F9;   /* light mode ka halka gray-blue hover */
 }
+
 /* ================================
    GLOBAL
 ================================ */
@@ -56,6 +59,11 @@ body {
 
 #sidebar {
   border-right: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+/* Overlay fade */
+#sidebarOverlay {
+  transition: opacity .25s ease;
 }
 
 /* ================================
@@ -122,7 +130,7 @@ header:hover {
 
 .stat-card:hover {
   transform: translateY(-4px);
-  background: var(--hover);   /* pehle: #24324A */
+  background: var(--hover);
   box-shadow: 0 10px 22px rgba(59,130,246,.18);
 }
 
@@ -152,12 +160,19 @@ header:hover {
 }
 
 /* ================================
-   SECTIONS
+   PAGE SECTIONS (multi-page switching)
 ================================ */
 
 section {
   scroll-margin-top: 25px;
-  animation: fadeSlideIn .5s ease both;
+}
+
+.page-section {
+  animation: fadeSlideIn .4s ease both;
+}
+
+.page-section.hidden {
+  display: none;
 }
 
 /* ================================
@@ -175,7 +190,8 @@ section {
 .stat-card,
 .chart-card,
 #predictionBanner,
-#alertsList > div {
+#alertsList > div,
+#serversGrid > div {
   border: 1px solid var(--border);
 }
 
@@ -185,26 +201,6 @@ section {
   letter-spacing: 0.04em;
   font-weight: 600;
   font-size: 10px;
-}
-
-:root{
-    --bg:#0F172A;
-    --card:#1E293B;
-    --text:#ffffff;
-    --primary:#3B82F6;
-    --text-secondary:#94A3B8;
-    --border: rgba(148, 163, 184, 0.12);
-    --hover: #24324A;   /* NAYA — dark mode ka hover shade */
-}
-
-.light-theme{
-    --bg:#abbdce;
-    --card:#ffffff;
-    --text:#0F172A;
-    --primary:#2563EB;
-    --text-secondary:#475569;
-    --border: rgba(15, 23, 42, 0.1);
-    --hover: #F1F5F9;   /* NAYA — light mode ka halka gray-blue hover */
 }
 
 /* ================================

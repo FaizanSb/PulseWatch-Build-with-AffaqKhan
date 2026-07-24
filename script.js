@@ -33,7 +33,7 @@ function setStatus(elementId, value, threshold) {
   }
 }
 
-// Linear regression trend prediction (see earlier explanation for the math)
+// Linear regression trend prediction
 function predictTrend(values) {
   const n = values.length;
   if (n < 4) return "Collecting data for prediction...";
@@ -104,7 +104,6 @@ function renderAlerts() {
   `).join("");
 }
 
-// BUG FIX: was checking "temperature" (undefined) — now correctly checks "temp"
 function checkAlerts() {
   if (cpu > 80 && canAlert("cpu")) pushAlert("danger", `High CPU usage: ${cpu}%`);
   if (ram > 85 && canAlert("ram")) pushAlert("warning", `Memory warning: ${ram}%`);
@@ -201,62 +200,99 @@ function updateClock() {
     new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
-// ============ MOBILE SIDEBAR TOGGLE ============
+// ============ SIDEBAR OPEN/CLOSE ============
 
-document.getElementById("menuBtn").addEventListener("click", () => {
-  document.getElementById("sidebar").classList.toggle("-translate-x-full");
-});
+const sidebar = document.getElementById("sidebar");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
+const sidebarClose = document.getElementById("sidebarClose");
+const menuBtn = document.getElementById("menuBtn");
 
-// ============ SCROLL-SPY (highlight active sidebar link) ============
-// Intersection Observer browser ko batata hai "ye element abhi screen pe
-// dikh raha hai ya nahi" — bina humein manually scroll position calculate
-// karne ki zaroorat ke. Jab koi section screen ke beech mein aata hai,
-// hum us se match karne wala sidebar link "active-link" bana dete hain.
+function openSidebar() {
+  sidebar.classList.remove("-translate-x-full");
+  sidebarOverlay.classList.remove("hidden");
+}
+
+function closeSidebar() {
+  sidebar.classList.add("-translate-x-full");
+  sidebarOverlay.classList.add("hidden");
+}
+
+menuBtn.addEventListener("click", openSidebar);
+sidebarClose.addEventListener("click", closeSidebar);
+sidebarOverlay.addEventListener("click", closeSidebar); // bahar tap karo to bhi band ho
+
+// ============ PAGE SWITCHING (replaces old scroll-spy) ============
 
 const navLinks = document.querySelectorAll(".nav-link");
+const pageSections = document.querySelectorAll(".page-section");
 
 function setActiveLink(sectionId) {
   navLinks.forEach(link => {
-    if (link.dataset.section === sectionId) {
-      link.classList.add("active-link");
-    } else {
-      link.classList.remove("active-link");
-    }
+    link.classList.toggle("active-link", link.dataset.section === sectionId);
   });
 }
 
-const sectionObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach(entry => {
-      // isIntersecting = true jab section screen ke observe-window mein aa jaye
-      if (entry.isIntersecting) {
-        setActiveLink(entry.target.id);
-      }
-    });
-  },
-  {
-    // rootMargin screen ke top/bottom se thora area "kaat" deta hai —
-    // isse section tab "active" mana jayega jab wo screen ke upper-mid area mein ho,
-    // sirf ek pixel dikhne pe nahi
-    rootMargin: "-20% 0px -70% 0px"
-  }
-);
-
-document.querySelectorAll("main section").forEach(section => {
-  sectionObserver.observe(section);
-});
-
-// ============ INIT ============
-
-if ("Notification" in window && Notification.permission === "default") {
-  Notification.requestPermission();
+function showPage(sectionId) {
+  pageSections.forEach(sec => {
+    sec.classList.toggle("hidden", sec.id !== sectionId);
+  });
+  setActiveLink(sectionId);
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-updateClock();
-setInterval(updateClock, 1000);
+navLinks.forEach(link => {
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    showPage(link.dataset.section);
+    closeSidebar(); // mobile pe link dabate hi sidebar khud band ho jaye
+  });
+});
 
-updateCards(); // run once immediately so page isn't empty on load
-setInterval(updateCards, 2000);
+// ============ SERVERS PAGE ============
+
+const serversData = [
+  { name: "Web Server 01",    location: "US-East",    status: "online",  cpu: 42, ram: 61 },
+  { name: "Database Primary", location: "US-East",    status: "online",  cpu: 58, ram: 74 },
+  { name: "Cache Server",     location: "EU-West",    status: "online",  cpu: 23, ram: 40 },
+  { name: "Backup Node",      location: "AP-South",   status: "warning", cpu: 81, ram: 88 },
+  { name: "API Gateway",      location: "US-West",    status: "online",  cpu: 35, ram: 52 },
+  { name: "Worker Node 02",   location: "EU-Central", status: "offline", cpu: 0,  ram: 0  }
+];
+
+function statusBadge(status) {
+  const map = {
+    online:  "bg-green-400/15 text-green-400",
+    warning: "bg-yellow-400/15 text-yellow-400",
+    offline: "bg-red-400/15 text-red-400"
+  };
+  return map[status] || map.online;
+}
+
+function renderServers() {
+  const grid = document.getElementById("serversGrid");
+  grid.innerHTML = serversData.map(s => `
+    <div class="bg-card rounded-xl p-4 chart-card">
+      <div class="flex items-center justify-between mb-2">
+        <p class="font-medium text-sm">${s.name}</p>
+        <span class="text-[10px] px-2 py-0.5 rounded-full capitalize ${statusBadge(s.status)}">${s.status}</span>
+      </div>
+      <p class="text-xs text-slate-400 mb-3">${s.location}</p>
+      <div class="flex items-center justify-between text-xs text-slate-400">
+        <span>CPU ${s.cpu}%</span>
+        <span>RAM ${s.ram}%</span>
+      </div>
+    </div>
+  `).join("");
+
+  document.getElementById("serverCount").textContent = `${serversData.length} servers`;
+}
+
+// ============ CLEAR ALERTS ============
+
+document.getElementById("clearAlertsBtn").addEventListener("click", () => {
+  alertLog = [];
+  renderAlerts();
+});
 
 // ============ THEME TOGGLE ============
 
@@ -273,14 +309,31 @@ function applyTheme(theme) {
   }
 }
 
-// Page load pe: pehle se saved theme yaad rakho (localStorage)
-const savedTheme = localStorage.getItem("pulsewatch-theme") || "dark";
-applyTheme(savedTheme);
-
-// Button click pe: mood switch karo aur yaad rakh lo
 themeToggle.addEventListener("click", () => {
   const isLight = htmlEl.classList.contains("light-theme");
   const newTheme = isLight ? "dark" : "light";
   applyTheme(newTheme);
   localStorage.setItem("pulsewatch-theme", newTheme);
 });
+
+// ============ INIT ============
+
+if ("Notification" in window && Notification.permission === "default") {
+  Notification.requestPermission();
+}
+
+// Page load pe: pehle se saved theme yaad rakho
+const savedTheme = localStorage.getItem("pulsewatch-theme") || "dark";
+applyTheme(savedTheme);
+
+// Default page: Dashboard
+showPage("dashboardSection");
+
+// Servers grid render (static dummy data — API aane pe yahan replace karna)
+renderServers();
+
+updateClock();
+setInterval(updateClock, 1000);
+
+updateCards(); // run once immediately so page isn't empty on load
+setInterval(updateCards, 2000);

@@ -7,18 +7,18 @@
   <title>PulseWatch AI</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          bgmain: "var(--bg)",
-          card: "var(--card)",
-          primary: "var(--primary)"
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bgmain: "var(--bg)",
+            card: "var(--card)",
+            primary: "var(--primary)"
+          }
         }
       }
     }
-  }
-</script>
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -29,14 +29,21 @@
 
     <!-- SIDEBAR -->
     <aside id="sidebar"
-      class="fixed top-0 left-0 w-56 h-screen bg-card p-4 transition-transform -translate-x-full md:translate-x-0 z-20">
-      <h2 class="font-semibold text-lg mb-4">PulseWatch AI</h2>
+      class="fixed top-0 left-0 w-56 h-screen bg-card p-4 transition-transform -translate-x-full md:translate-x-0 z-30">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-semibold text-lg">PulseWatch AI</h2>
+        <!-- sidebar close button, sirf mobile pe -->
+        <button id="sidebarClose" class="md:hidden text-xl leading-none text-slate-400">✕</button>
+      </div>
       <nav class="flex flex-col gap-1 text-sm">
-        <a href="#dashboardSection" class="nav-link" data-section="dashboardSection">🏠 Dashboard</a>
-        <a href="#serversSection" class="nav-link" data-section="serversSection">🖥 Servers</a>
-        <a href="#alertsSection" class="nav-link" data-section="alertsSection">⚠ Alerts</a>
+        <a href="#" class="nav-link active-link" data-section="dashboardSection">🏠 Dashboard</a>
+        <a href="#" class="nav-link" data-section="serversSection">🖥 Servers</a>
+        <a href="#" class="nav-link" data-section="alertsSection">⚠ Alerts</a>
       </nav>
     </aside>
+
+    <!-- dark overlay jo mobile pe sidebar ke peeche aata hai -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-20 hidden"></div>
 
     <!-- MAIN CONTENT -->
     <main class="flex-1 p-4 md:p-6 md:ml-56">
@@ -56,7 +63,7 @@
           </span>
           <span id="currentTime">10:42 AM</span>
 
-          <!-- NAYA: Theme toggle button -->
+          <!-- Theme toggle button -->
           <button id="themeToggle" class="text-lg leading-none">🌙</button>
 
           <span>🔔</span>
@@ -67,7 +74,7 @@
       </header>
 
       <!-- ============ DASHBOARD SECTION ============ -->
-      <section id="dashboardSection">
+      <section id="dashboardSection" class="page-section">
 
         <!-- OVERVIEW CARDS -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mt-4">
@@ -142,16 +149,22 @@
 
       </section>
 
-      <!-- ============ SERVERS SECTION (simple, same page) ============ -->
-      <section id="serversSection" class="mt-6">
-        <p class="text-xs text-slate-400 mb-2">Servers</p>
-        <!-- PLACEHOLDER: server cards will go here in a later step -->
+      <!-- ============ SERVERS SECTION (proper page) ============ -->
+      <section id="serversSection" class="page-section hidden">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold">Servers</h2>
+          <span class="text-xs text-slate-400" id="serverCount"></span>
+        </div>
+        <div id="serversGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
       </section>
 
-      <!-- ============ ALERTS SECTION ============ -->
-      <section id="alertsSection" class="mt-6">
+      <!-- ============ ALERTS SECTION (proper page) ============ -->
+      <section id="alertsSection" class="page-section hidden">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold">Alerts</h2>
+          <button id="clearAlertsBtn" class="text-xs text-slate-400 hover:text-red-400 transition">Clear all</button>
+        </div>
         <div class="bg-card rounded-xl p-4 chart-card">
-          <p class="text-xs text-slate-400 mb-3">Recent alerts</p>
           <div id="alertsList" class="flex flex-col gap-2 text-sm">
             <p class="text-slate-500 text-xs">No alerts yet.</p>
           </div>
