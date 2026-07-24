@@ -1,25 +1,19 @@
 :root{
-
     --bg:#0F172A;
-
     --card:#1E293B;
-
     --text:#ffffff;
-
     --primary:#3B82F6;
-
+    --text-secondary:#94A3B8;   /* NAYA — labels/muted text ke liye */
+    --border: rgba(148, 163, 184, 0.12);  /* NAYA — card boundary */
 }
 
 .light-theme{
-
     --bg:#abbdce;
-
     --card:#ffffff;
-
     --text:#0F172A;
-
     --primary:#2563EB;
-
+    --text-secondary:#475569;   /* NAYA — dark-ish gray, light bg pe readable */
+    --border: rgba(15, 23, 42, 0.1);  /* NAYA */
 }
 /* ================================
    GLOBAL
@@ -128,7 +122,7 @@ header:hover {
 
 .stat-card:hover {
   transform: translateY(-4px);
-  background: #24324A;
+  background: var(--hover);   /* pehle: #24324A */
   box-shadow: 0 10px 22px rgba(59,130,246,.18);
 }
 
@@ -164,6 +158,53 @@ header:hover {
 section {
   scroll-margin-top: 25px;
   animation: fadeSlideIn .5s ease both;
+}
+
+/* ================================
+   MUTED TEXT — theme-aware override
+   Tailwind ki fixed slate-400/500/300 classes
+   ko hamare CSS variable se jodte hain
+================================ */
+
+.text-slate-400,
+.text-slate-500,
+.text-slate-300 {
+  color: var(--text-secondary) !important;
+}
+
+.stat-card,
+.chart-card,
+#predictionBanner,
+#alertsList > div {
+  border: 1px solid var(--border);
+}
+
+.stat-card p:first-child,
+.chart-card p:first-child {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  font-size: 10px;
+}
+
+:root{
+    --bg:#0F172A;
+    --card:#1E293B;
+    --text:#ffffff;
+    --primary:#3B82F6;
+    --text-secondary:#94A3B8;
+    --border: rgba(148, 163, 184, 0.12);
+    --hover: #24324A;   /* NAYA — dark mode ka hover shade */
+}
+
+.light-theme{
+    --bg:#abbdce;
+    --card:#ffffff;
+    --text:#0F172A;
+    --primary:#2563EB;
+    --text-secondary:#475569;
+    --border: rgba(15, 23, 42, 0.1);
+    --hover: #F1F5F9;   /* NAYA — light mode ka halka gray-blue hover */
 }
 
 /* ================================
