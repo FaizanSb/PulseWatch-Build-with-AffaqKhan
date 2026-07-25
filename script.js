@@ -248,6 +248,24 @@ navLinks.forEach(link => {
   });
 });
 
+// bell icon pe click karne se alerts page khulega
+// Existing nav-links wala code (jaisa hai waisa rehne do)
+navLinks.forEach(link => {
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    showPage(link.dataset.section);
+    closeSidebar();
+  });
+});
+
+// Bell ke liye alag listener — isme active-link class kabhi involve nahi hogi
+const bellIcon = document.querySelector('[data-section="alertsSection"].cursor-pointer');
+
+bellIcon.addEventListener("click", () => {
+  showPage(bellIcon.dataset.section);
+  closeSidebar();
+});
+
 // ============ SERVERS PAGE ============
 
 const serversData = [
