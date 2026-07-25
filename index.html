@@ -20,7 +20,7 @@
     }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="Style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="bg-bgmain">
@@ -32,7 +32,6 @@
       class="fixed top-0 left-0 w-56 h-screen bg-card p-4 transition-transform -translate-x-full md:translate-x-0 z-30">
       <div class="flex items-center justify-between mb-4">
         <h2 class="font-semibold text-lg">PulseWatch AI</h2>
-        <!-- sidebar close button, sirf mobile pe -->
         <button id="sidebarClose" class="md:hidden text-xl leading-none text-slate-400">✕</button>
       </div>
       <nav class="flex flex-col gap-1 text-sm">
@@ -42,10 +41,8 @@
       </nav>
     </aside>
 
-    <!-- dark overlay jo mobile pe sidebar ke peeche aata hai -->
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-20 hidden"></div>
 
-    <!-- MAIN CONTENT -->
     <!-- MAIN CONTENT -->
     <main class="flex-1 p-4 md:p-6 md:ml-56 space-y-4">
 
@@ -53,7 +50,7 @@
       <header class="bg-card rounded-xl px-4 md:px-5 py-3 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <button id="menuBtn" class="md:hidden text-lg leading-none text-[color:var(--text)]">☰</button>
-          <h1 class="font-semibold text-base">PulseWatch Dashboard</h1>
+          <h1 class="font-semibold text-lg">PulseWatch Dashboard</h1>
         </div>
 
         <div class="flex items-center gap-3 md:gap-5 text-xs md:text-sm text-slate-400">
@@ -63,7 +60,11 @@
           </span>
           <span id="currentTime">10:42 AM</span>
           <button id="themeToggle" class="text-lg leading-none">🌙</button>
-          <span data-section="alertsSection" class="cursor-pointer relative">🔔</span>
+          <span data-section="alertsSection" id="bellIcon" class="relative cursor-pointer text-lg leading-none">
+            🔔
+            <span id="alertBadge"
+              class="hidden absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 bg-red-500 rounded-full text-[10px] flex items-center justify-center text-white"></span>
+          </span>
           <div class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-xs text-white">
             MF
           </div>
@@ -72,6 +73,10 @@
 
       <!-- ============ DASHBOARD SECTION ============ -->
       <section id="dashboardSection" class="page-section space-y-4">
+
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold">Dashboard Overview</h2>
+        </div>
 
         <!-- OVERVIEW CARDS -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -141,9 +146,12 @@
       <section id="serversSection" class="page-section hidden space-y-4">
         <div class="flex items-center justify-between">
           <h2 class="text-lg font-semibold">Servers</h2>
-          <span class="text-xs text-slate-400" id="serverCount"></span>
+          <span id="serverCount"
+            class="text-xs font-medium px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/30">
+            6 Active Nodes
+          </span>
         </div>
-        <div id="serversGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+        <div id="serversGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </section>
 
       <!-- ============ ALERTS SECTION ============ -->
