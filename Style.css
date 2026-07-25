@@ -120,6 +120,20 @@ header:hover {
   box-shadow: 0 10px 25px rgba(0,0,0,.25);
 }
 
+/* Default: dark theme active, dark-theme wala logo dikhega */
+.logo-light {
+  display: none;
+}
+
+/* Jab light-theme class <html> pe lag jaye, to ulta */
+.light-theme .logo-dark {
+  display: none;
+}
+
+.light-theme .logo-light {
+  display: block;
+}
+
 /* ================================
    OVERVIEW CARDS
 ================================ */
