@@ -266,6 +266,33 @@ bellIcon.addEventListener("click", () => {
   closeSidebar();
 });
 
+const alertsList = document.getElementById('alertsList');
+const alertsEmptyState = document.getElementById('alertsEmptyState');
+const clearAlertsBtn = document.getElementById('clearAlertsBtn');
+
+function addAlert(message, type = "warning") {
+  // empty state hide, list show
+  alertsEmptyState.classList.add('hidden');
+  alertsList.classList.remove('hidden');
+
+  const alertItem = document.createElement('div');
+  alertItem.className = "flex items-center justify-between bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2";
+  alertItem.innerHTML = `
+    <span class="text-red-400">${message}</span>
+    <span class="text-[10px] text-slate-500">${new Date().toLocaleTimeString()}</span>
+  `;
+  alertsList.prepend(alertItem);
+
+  showAlertBadge(); // bell pe red badge (pichla wala function)
+}
+
+clearAlertsBtn.addEventListener('click', () => {
+  alertsList.innerHTML = '';
+  alertsList.classList.add('hidden');
+  alertsEmptyState.classList.remove('hidden');
+  hideAlertBadge();
+});
+
 // ============ SERVERS PAGE ============
 
 const serversData = [

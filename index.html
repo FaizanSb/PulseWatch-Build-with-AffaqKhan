@@ -46,13 +46,13 @@
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-20 hidden"></div>
 
     <!-- MAIN CONTENT -->
-    <main class="flex-1 p-4 md:p-6 md:ml-56">
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 p-4 md:p-6 md:ml-56 space-y-4">
 
       <!-- NAVBAR -->
       <header class="bg-card rounded-xl px-4 md:px-5 py-3 flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <!-- Mobile menu button -->
-          <button id="menuBtn" class="md:hidden text-lg leading-none text-var(--text)">☰</button>
+          <button id="menuBtn" class="md:hidden text-lg leading-none text-[color:var(--text)]">☰</button>
           <h1 class="font-semibold text-base">PulseWatch Dashboard</h1>
         </div>
 
@@ -62,11 +62,8 @@
             Healthy
           </span>
           <span id="currentTime">10:42 AM</span>
-
-          <!-- Theme toggle button -->
           <button id="themeToggle" class="text-lg leading-none">🌙</button>
-
-          <span data-section="alertsSection" class="cursor-pointer">🔔</span>
+          <span data-section="alertsSection" class="cursor-pointer relative">🔔</span>
           <div class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-xs text-white">
             MF
           </div>
@@ -74,100 +71,104 @@
       </header>
 
       <!-- ============ DASHBOARD SECTION ============ -->
-      <section id="dashboardSection" class="page-section">
+      <section id="dashboardSection" class="page-section space-y-4">
 
         <!-- OVERVIEW CARDS -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mt-4">
-
-          <div class="bg-card rounded-xl p-3 text-center stat-card">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div class="bg-card rounded-xl p-4 text-center stat-card">
             <p class="text-xs text-slate-400">CPU</p>
-            <p id="cpuValue" class="text-lg font-medium">45%</p>
-            <p id="cpuStatus" class="text-[10px] text-green-400">Healthy</p>
+            <p id="cpuValue" class="text-lg font-medium mt-1">45%</p>
+            <p id="cpuStatus" class="text-[10px] text-green-400 mt-0.5">Healthy</p>
           </div>
-
-          <div class="bg-card rounded-xl p-3 text-center stat-card">
+          <div class="bg-card rounded-xl p-4 text-center stat-card">
             <p class="text-xs text-slate-400">RAM</p>
-            <p id="ramValue" class="text-lg font-medium">68%</p>
-            <p id="ramStatus" class="text-[10px] text-yellow-400">Warning</p>
+            <p id="ramValue" class="text-lg font-medium mt-1">68%</p>
+            <p id="ramStatus" class="text-[10px] text-yellow-400 mt-0.5">Warning</p>
           </div>
-
-          <div class="bg-card rounded-xl p-3 text-center stat-card">
+          <div class="bg-card rounded-xl p-4 text-center stat-card">
             <p class="text-xs text-slate-400">Disk</p>
-            <p id="diskValue" class="text-lg font-medium">72%</p>
-            <p id="diskStatus" class="text-[10px] text-green-400">Healthy</p>
+            <p id="diskValue" class="text-lg font-medium mt-1">72%</p>
+            <p id="diskStatus" class="text-[10px] text-green-400 mt-0.5">Healthy</p>
           </div>
-
-          <div class="bg-card rounded-xl p-3 text-center stat-card">
+          <div class="bg-card rounded-xl p-4 text-center stat-card">
             <p class="text-xs text-slate-400">Network</p>
-            <p id="networkValue" class="text-lg font-medium">125 Mbps</p>
-            <p id="networkStatus" class="text-[10px] text-blue-400">Stable</p>
+            <p id="networkValue" class="text-lg font-medium mt-1">125 Mbps</p>
+            <p id="networkStatus" class="text-[10px] text-blue-400 mt-0.5">Stable</p>
           </div>
-
-          <div class="bg-card rounded-xl p-3 text-center stat-card">
+          <div class="bg-card rounded-xl p-4 text-center stat-card">
             <p class="text-xs text-slate-400">Temp</p>
-            <p id="tempValue" class="text-lg font-medium">46°C</p>
-            <p id="tempStatus" class="text-[10px] text-green-400">Normal</p>
+            <p id="tempValue" class="text-lg font-medium mt-1">46°C</p>
+            <p id="tempStatus" class="text-[10px] text-green-400 mt-0.5">Normal</p>
           </div>
-
-          <div class="bg-card rounded-xl p-3 text-center stat-card">
+          <div class="bg-card rounded-xl p-4 text-center stat-card">
             <p class="text-xs text-slate-400">Uptime</p>
-            <p id="uptimeValue" class="text-lg font-medium">5 Days</p>
-            <p class="text-[10px] text-purple-400">Stable</p>
+            <p id="uptimeValue" class="text-lg font-medium mt-1">5 Days</p>
+            <p class="text-[10px] text-purple-400 mt-0.5">Stable</p>
           </div>
-
         </div>
 
         <!-- PREDICTION BANNER -->
         <div id="predictionBanner"
-          class="bg-card rounded-xl px-4 py-3 text-sm mt-3 border border-blue-500/30 text-slate-300">
+          class="bg-card rounded-xl px-4 py-3 text-sm border border-blue-500/30 text-slate-300">
           Collecting data...
         </div>
 
         <!-- CHARTS -->
-        <div class="bg-card rounded-xl p-4 mt-4 chart-card">
-          <p class="text-xs text-slate-400 mb-2">CPU usage</p>
+        <div class="bg-card rounded-xl p-4 chart-card">
+          <p class="text-xs text-slate-400 mb-3">CPU usage</p>
           <canvas id="cpuChart" height="80"></canvas>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div class="bg-card rounded-xl p-4 chart-card">
-            <p class="text-xs text-slate-400 mb-2">RAM usage</p>
+            <p class="text-xs text-slate-400 mb-3">RAM usage</p>
             <canvas id="ramChart" height="80"></canvas>
           </div>
           <div class="bg-card rounded-xl p-4 chart-card">
-            <p class="text-xs text-slate-400 mb-2">Network</p>
+            <p class="text-xs text-slate-400 mb-3">Network</p>
             <canvas id="networkChart" height="80"></canvas>
           </div>
         </div>
 
-        <div class="bg-card rounded-xl p-4 mt-3 chart-card">
-          <p class="text-xs text-slate-400 mb-2">Disk usage</p>
+        <div class="bg-card rounded-xl p-4 chart-card">
+          <p class="text-xs text-slate-400 mb-3">Disk usage</p>
           <canvas id="diskChart" height="80"></canvas>
         </div>
 
-        <!-- PLACEHOLDER: Processes table + System info will go here in next steps -->
-
       </section>
 
-      <!-- ============ SERVERS SECTION (proper page) ============ -->
-      <section id="serversSection" class="page-section hidden">
-        <div class="flex items-center justify-between mb-4">
+      <!-- ============ SERVERS SECTION ============ -->
+      <section id="serversSection" class="page-section hidden space-y-4">
+        <div class="flex items-center justify-between">
           <h2 class="text-lg font-semibold">Servers</h2>
           <span class="text-xs text-slate-400" id="serverCount"></span>
         </div>
         <div id="serversGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
       </section>
 
-      <!-- ============ ALERTS SECTION (proper page) ============ -->
-      <section id="alertsSection" class="page-section hidden">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold">Alerts</h2>
-          <button id="clearAlertsBtn" class="text-xs text-slate-400 hover:text-red-400 transition">Clear all</button>
+      <!-- ============ ALERTS SECTION ============ -->
+      <section id="alertsSection" class="page-section hidden space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold">System Alerts</h2>
+          <button id="clearAlertsBtn"
+            class="text-xs px-3 py-1.5 rounded-lg bg-card text-slate-400 hover:text-red-400 transition">
+            Clear All
+          </button>
         </div>
-        <div class="bg-card rounded-xl p-4 chart-card">
-          <div id="alertsList" class="flex flex-col gap-2 text-sm">
-            <p class="text-slate-500 text-xs">No alerts yet.</p>
+
+        <div class="bg-card rounded-xl p-4 chart-card min-h-[320px] flex items-center justify-center">
+          <div id="alertsEmptyState" class="flex flex-col items-center text-center py-10">
+            <div class="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-green-400" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <p class="text-lg font-semibold mb-1">All Clear</p>
+            <p class="text-sm text-slate-400">No active alerts or warnings at this time.</p>
           </div>
+
+          <div id="alertsList" class="hidden w-full flex flex-col gap-2 text-sm"></div>
         </div>
       </section>
 
