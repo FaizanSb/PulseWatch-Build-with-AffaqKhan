@@ -2,8 +2,7 @@
 
 **A Real-Time Server Resource Monitoring & Analyzer Dashboard**
 
-Built for the **Code With Affaq Coding Challenge #1** 🚀
-*(Mention: Affaq Khan | Hashtag: #BuildWithAffaq)*
+Built for the **Code With Affaq Coding Challenge
 
 ---
 
@@ -20,6 +19,7 @@ The project gives system admins/developers a clean, responsive interface to moni
 1. Clone the repository:
    ```bash
    git clone https://github.com/FaizanSb/PulseWatch-Build-with-AffaqKhan.git
+
    cd PulseWatch-Build-with-AffaqKhan
    ```
 
