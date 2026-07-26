@@ -66,12 +66,13 @@ function predictTrend(values) {
 
 // ============ ALERT SOUND ============
 // Put a short beep file at assets/alert-beep.mp3 (any free notification sound works)
-const alertSound = new Audio("assets/alert-beep.mp3");
+const alertSound = new Audio("/assets/beepAlarm.mp3");
 
 function playAlertSound() {
   alertSound.currentTime = 0; // taake baar baar bajay
   alertSound.play().catch(() => {
     // Browsers block autoplay until the user interacts with the page once — normal, not a bug
+
   });
 }
 
