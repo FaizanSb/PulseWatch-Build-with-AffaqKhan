@@ -103,8 +103,18 @@
 
         <!-- PREDICTION BANNER -->
         <div id="predictionBanner"
-          class="bg-card rounded-xl px-4 py-3 text-sm border border-blue-500/30 text-slate-300">
-          Collecting data...
+          class="bg-card rounded-xl px-4 py-3 text-sm border border-blue-500/30 text-slate-300 flex items-center justify-between gap-3">
+          <span id="predictionText">Collecting data...</span>
+
+          <div class="prediction-info">
+            <span class="info-icon">i</span>
+            <div class="info-tooltip">
+              <strong>Custom-built prediction engine</strong> — no external ML library used.
+              A simple linear regression (<code>y = mx + c</code>) is calculated manually
+              from the last 10 CPU readings using the least-squares method to estimate
+              the next likely value and trend direction.
+            </div>
+          </div>
         </div>
 
         <!-- CHARTS -->

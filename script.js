@@ -64,6 +64,29 @@ function predictTrend(values) {
   }
 }
 
+// ============ ALERT SOUND ============
+// Put a short beep file at assets/alert-beep.mp3 (any free notification sound works)
+const alertSound = new Audio("assets/alert-beep.mp3");
+
+function playAlertSound() {
+  alertSound.currentTime = 0; // taake baar baar bajay
+  alertSound.play().catch(() => {
+    // Browsers block autoplay until the user interacts with the page once — normal, not a bug
+  });
+}
+
+// ============ BELL BADGE ============
+const alertBadge = document.getElementById("alertBadge");
+
+function updateAlertBadge() {
+  if (alertLog.length > 0) {
+    alertBadge.textContent = alertLog.length;
+    alertBadge.classList.remove("hidden");
+  } else {
+    alertBadge.classList.add("hidden");
+  }
+}
+
 // ============ ALERTS ============
 
 function canAlert(key) {
@@ -83,7 +106,10 @@ function pushAlert(type, message) {
   };
   alertLog.unshift(alert);
   alertLog = alertLog.slice(0, 10);
+
   renderAlerts();
+  playAlertSound();
+  updateAlertBadge();
 
   if ("Notification" in window && Notification.permission === "granted") {
     new Notification("PulseWatch Alert", { body: message });
@@ -104,17 +130,18 @@ function renderAlerts() {
   empty.classList.add("hidden");
   list.classList.remove("hidden");
 
-  list.innerHTML = alertLog.map(a => `
-    <div class="flex items-center justify-between text-xs bg-bgmain rounded-lg px-3 py-2">
-      <span class="${a.type === 'danger'
-        ? 'text-red-400'
-        : 'text-yellow-400'}">
+  // "alert-new" class sirf sabse naye (index 0) alert pe lagti hai,
+  // isliye sirf wahi pulse/animate hoga, purane cards dobara nahi hilenge
+  list.innerHTML = alertLog.map((a, i) => `
+    <div class="flex items-center justify-between text-xs bg-bgmain rounded-lg px-3 py-2 ${i === 0 ? "alert-new" : ""}">
+      <span class="${a.type === "danger" ? "text-red-400" : "text-yellow-400"}">
         ● ${a.message}
       </span>
       <span class="text-slate-500">${a.time}</span>
     </div>
   `).join("");
 }
+
 function checkAlerts() {
   if (cpu > 80 && canAlert("cpu")) pushAlert("danger", `High CPU usage: ${cpu}%`);
   if (ram > 85 && canAlert("ram")) pushAlert("warning", `Memory warning: ${ram}%`);
@@ -183,7 +210,8 @@ function updateCards() {
     if (history[key].length > 20) history[key].shift();
   });
 
-  document.getElementById("predictionBanner").textContent = predictTrend(history.cpu);
+  // FIX: sirf inner span update hoga ab, tooltip icon/div safe rahega
+  document.getElementById("predictionText").textContent = predictTrend(history.cpu);
 
   cpuChart.data.labels = history.cpu.map((_, i) => i);
   cpuChart.data.datasets[0].data = history.cpu;
@@ -232,7 +260,7 @@ menuBtn.addEventListener("click", openSidebar);
 sidebarClose.addEventListener("click", closeSidebar);
 sidebarOverlay.addEventListener("click", closeSidebar); // bahar tap karo to bhi band ho
 
-// ============ PAGE SWITCHING (replaces old scroll-spy) ============
+// ============ PAGE SWITCHING ============
 
 const navLinks = document.querySelectorAll(".nav-link");
 const pageSections = document.querySelectorAll(".page-section");
@@ -251,6 +279,7 @@ function showPage(sectionId) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+// FIX: pehle ye listener 2 baar attach ho raha tha — ab sirf ek baar
 navLinks.forEach(link => {
   link.addEventListener("click", (e) => {
     e.preventDefault();
@@ -259,49 +288,13 @@ navLinks.forEach(link => {
   });
 });
 
-// bell icon pe click karne se alerts page khulega
-// Existing nav-links wala code (jaisa hai waisa rehne do)
-navLinks.forEach(link => {
-  link.addEventListener("click", (e) => {
-    e.preventDefault();
-    showPage(link.dataset.section);
-    closeSidebar();
-  });
-});
-
-// Bell ke liye alag listener — isme active-link class kabhi involve nahi hogi
+// Bell icon pe click karne se alerts page khulega
+// (active-link class involve nahi hoti isme, sirf page switch hota hai)
 const bellIcon = document.querySelector('[data-section="alertsSection"].cursor-pointer');
 
 bellIcon.addEventListener("click", () => {
   showPage(bellIcon.dataset.section);
   closeSidebar();
-});
-
-const alertsList = document.getElementById('alertsList');
-const alertsEmptyState = document.getElementById('alertsEmptyState');
-const clearAlertsBtn = document.getElementById('clearAlertsBtn');
-
-function addAlert(message, type = "warning") {
-  // empty state hide, list show
-  alertsEmptyState.classList.add('hidden');
-  alertsList.classList.remove('hidden');
-
-  const alertItem = document.createElement('div');
-  alertItem.className = "flex items-center justify-between bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2";
-  alertItem.innerHTML = `
-    <span class="text-red-400">${message}</span>
-    <span class="text-[10px] text-slate-500">${new Date().toLocaleTimeString()}</span>
-  `;
-  alertsList.prepend(alertItem);
-
-  showAlertBadge(); // bell pe red badge (pichla wala function)
-}
-
-clearAlertsBtn.addEventListener('click', () => {
-  alertsList.innerHTML = '';
-  alertsList.classList.add('hidden');
-  alertsEmptyState.classList.remove('hidden');
-  hideAlertBadge();
 });
 
 // ============ SERVERS PAGE ============
@@ -344,10 +337,12 @@ function renderServers() {
 }
 
 // ============ CLEAR ALERTS ============
-
+// FIX: pehle 2 alag listeners is button pe lagay hue thay, ab sirf ek —
+// alertLog reset karta hai, list re-render karta hai, aur badge bhi hide karta hai
 document.getElementById("clearAlertsBtn").addEventListener("click", () => {
   alertLog = [];
   renderAlerts();
+  updateAlertBadge();
 });
 
 // ============ THEME TOGGLE ============

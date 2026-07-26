@@ -218,6 +218,98 @@ section {
 }
 
 /* ================================
+   ALERT ANIMATION (new alert pulse)
+================================ */
+
+@keyframes alertPulse {
+  0%   { transform: scale(1);    box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
+  50%  { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+  100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+}
+
+.alert-new {
+  animation: alertPulse .8s ease-in-out 2;
+  border-left: 4px solid #ef4444;
+}
+
+/* ================================
+   PREDICTION INFO TOOLTIP
+================================ */
+
+.prediction-info {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.info-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.prediction-info:hover .info-icon {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, .18);
+}
+
+.info-tooltip {
+  position: absolute;
+  bottom: 130%;
+  right: 0;
+  width: 260px;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 10px 12px;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .25);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: all .2s ease;
+  z-index: 20;
+}
+
+/* chhota sa neeche wala pointer/arrow — professional touch */
+.info-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 8px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: var(--card) transparent transparent transparent;
+}
+
+.prediction-info:hover .info-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.info-tooltip code {
+  background: rgba(148, 163, 184, 0.15);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 11px;
+}
+
+/* ================================
    ANIMATION
 ================================ */
 
