@@ -68,7 +68,7 @@ function predictTrend(values) {
 
 function canAlert(key) {
   const now = Date.now();
-  if (now - lastAlertTime[key] > COOLDOWN) {
+  if (now - lastAlertTime[key] > COOLDOWN) { // check cooldown
     lastAlertTime[key] = now;
     return true;
   }
@@ -92,18 +92,29 @@ function pushAlert(type, message) {
 
 function renderAlerts() {
   const list = document.getElementById("alertsList");
+  const empty = document.getElementById("alertsEmptyState");
+
   if (alertLog.length === 0) {
-    list.innerHTML = `<p class="text-slate-500 text-xs">No alerts yet.</p>`;
+    empty.classList.remove("hidden");
+    list.classList.add("hidden");
+    list.innerHTML = "";
     return;
   }
+
+  empty.classList.add("hidden");
+  list.classList.remove("hidden");
+
   list.innerHTML = alertLog.map(a => `
     <div class="flex items-center justify-between text-xs bg-bgmain rounded-lg px-3 py-2">
-      <span class="${a.type === 'danger' ? 'text-red-400' : 'text-yellow-400'}">● ${a.message}</span>
+      <span class="${a.type === 'danger'
+        ? 'text-red-400'
+        : 'text-yellow-400'}">
+        ● ${a.message}
+      </span>
       <span class="text-slate-500">${a.time}</span>
     </div>
   `).join("");
 }
-
 function checkAlerts() {
   if (cpu > 80 && canAlert("cpu")) pushAlert("danger", `High CPU usage: ${cpu}%`);
   if (ram > 85 && canAlert("ram")) pushAlert("warning", `Memory warning: ${ram}%`);
