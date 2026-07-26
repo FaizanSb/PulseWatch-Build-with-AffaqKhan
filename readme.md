@@ -42,7 +42,7 @@ The project gives system admins/developers a clean, responsive interface to moni
 | 🚨 Alerts Section | Real-time alert system for threshold breaches (high CPU, low memory, etc.) |
 | 🌗 Theme Toggle | Smooth dark/light mode switch across the entire app |
 | 📈 Graphs & Cards | Data visualized through both graphs and card-based UI |
-| 🔮 Custom Regression Model | Predicts next likely server load — built from scratch (no ML library) |
+| 🔮 Custom Regression Model | Predicts next likely server load built from scratch (no ML library) |
 | 🎨 Hover Effects | Polished micro-interactions for a premium feel |
 | 📱 Fully Responsive | Works seamlessly across desktop, tablet, and mobile |
 
