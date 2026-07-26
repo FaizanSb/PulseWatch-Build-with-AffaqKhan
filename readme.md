@@ -71,16 +71,16 @@ The project gives system admins/developers a clean, responsive interface to moni
 ## 📸 Screenshots
 
 ### 1️⃣ Dashboard Section
-![Dashboard Screenshot](./screenshots/dashboard.png)
+![Dashboard Screenshot](./ScreenShots/dashboard.png)
 
 ### 2️⃣ Servers Section
-![Servers Screenshot](./screenshots/servers.png)
+![Servers Screenshot](./ScreenShots/servers.png)
 
 ### 3️⃣ Alerts Section
-![Alerts Screenshot](./screenshots/alerts.png)
+![Alerts Screenshot](./ScreenShots/Alerts.png)
 
 ### 4️⃣ Theme Toggle View
-![Toggle Theme Screenshot](./screenshots/toggle.png)
+![Toggle Theme Screenshot](./ScreenShots/toggle.png)
 
 ---
 
