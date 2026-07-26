@@ -231,6 +231,9 @@ function updateCards() {
   diskChart.update("none");
 
   checkAlerts();
+
+  // Servers ke apne cpu/ram bhi thoda fluctuate karein — offline node ko chhod kar
+  updateServersData();
 }
 
 // ============ CLOCK ============
@@ -335,6 +338,21 @@ function renderServers() {
   `).join("");
 
   document.getElementById("serverCount").textContent = `${serversData.length} servers`;
+}
+
+// Server ke apne cpu/ram values ko live fluctuate karta hai (offline server ko 0/0 pe fix rakhta hai)
+// aur phir grid ko re-render karta hai, taake numbers "fix" na rahein.
+function updateServersData() {
+  serversData.forEach(s => {
+    if (s.status === "offline") {
+      s.cpu = 0;
+      s.ram = 0;
+      return;
+    }
+    s.cpu = randomWalk(s.cpu, 10, 95, 5);
+    s.ram = randomWalk(s.ram, 15, 95, 4);
+  });
+  renderServers();
 }
 
 // ============ CLEAR ALERTS ============

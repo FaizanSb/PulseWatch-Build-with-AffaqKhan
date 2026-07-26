@@ -1,137 +1,208 @@
+/* ================================
+   PULSEWATCH — DESIGN TOKENS
+   Identity: control-room signal monitor.
+   Cyan "pulse" accent = the live signal.
+   Mono numerals = instrument readout feel.
+================================ */
+
 :root{
-    --bg:#0F172A;
-    --card:#1E293B;
-    --text:#ffffff;
-    --primary:#3B82F6;
-    --text-secondary:#94A3B8;   /* labels/muted text ke liye */
-    --border: rgba(148, 163, 184, 0.12);  /* card boundary */
-    --hover: #24324A;   /* dark mode ka hover shade */
+    --bg:#0A0E1A;
+    --bg-soft: radial-gradient(1200px 600px at 15% -10%, rgba(34,211,238,.07), transparent 60%),
+               radial-gradient(900px 500px at 100% 0%, rgba(139,92,246,.06), transparent 55%),
+               #0A0E1A;
+    --card:#121933;
+    --card-2:#161E3D;
+    --text:#E9EEFB;
+    --primary:#22D3EE;
+    --primary-strong:#06B6D4;
+    --text-secondary:#8493B8;
+    --border: rgba(140, 155, 200, 0.14);
+    --hover:#1B2545;
+    --shadow: rgba(3, 6, 18, 0.55);
+    --warning:#F5A623;
+    --danger:#F43F5E;
+    --success:#34D399;
 }
 
 .light-theme{
-    --bg:#abbdce;
-    --card:#ffffff;
-    --text:#0F172A;
-    --primary:#2563EB;
-    --text-secondary:#475569;   /* dark-ish gray, light bg pe readable */
-    --border: rgba(15, 23, 42, 0.1);
-    --hover: #F1F5F9;   /* light mode ka halka gray-blue hover */
+    --bg:#EDF1F9;
+    --bg-soft: radial-gradient(1200px 600px at 15% -10%, rgba(8,145,178,.06), transparent 60%),
+               radial-gradient(900px 500px at 100% 0%, rgba(124,58,237,.05), transparent 55%),
+               #EDF1F9;
+    --card:#FFFFFF;
+    --card-2:#F6F8FD;
+    --text:#0F1729;
+    --primary:#0891B2;
+    --primary-strong:#0E7490;
+    --text-secondary:#5B6B8C;
+    --border: rgba(15, 23, 42, 0.09);
+    --hover:#F1F5FC;
+    --shadow: rgba(15, 23, 42, 0.10);
+    --warning:#B45309;
+    --danger:#DC2626;
+    --success:#059669;
+}
+
+/* ================================
+   FONTS
+   Space Grotesk  -> headings / labels (technical, geometric)
+   Inter          -> body / UI text
+   JetBrains Mono -> live numeric readouts (no jitter, instrument feel)
+================================ */
+
+* { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+
+h2, .font-semibold, .nav-link, #serverCount {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  letter-spacing: 0.01em;
+}
+
+#cpuValue, #ramValue, #diskValue, #networkValue, #tempValue, #uptimeValue,
+#currentTime, .stat-card p:nth-child(2) {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 /* ================================
    GLOBAL
 ================================ */
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
-  background: var(--bg);
+  background: var(--bg-soft);
+  background-attachment: fixed;
   color: var(--text);
   overflow-x: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 /* ================================
    SCROLLBAR
 ================================ */
 
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg);
-}
-
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: var(--primary);
+  background: var(--primary-strong);
   border-radius: 10px;
 }
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--primary);
-}
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
 /* ================================
    SIDEBAR
 ================================ */
 
 #sidebar {
-  border-right: 1px solid rgba(148, 163, 184, 0.15);
+  background: linear-gradient(180deg, var(--card) 0%, var(--card-2) 100%);
+  border-right: 1px solid var(--border);
+  box-shadow: 0 0 40px var(--shadow);
 }
 
-/* Overlay fade */
+#sidebar h2 {
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--text) 0%, var(--primary) 120%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 #sidebarOverlay {
   transition: opacity .25s ease;
+  backdrop-filter: blur(2px);
 }
 
 /* ================================
    SIDEBAR LINKS
+   Signature: EKG-style left accent bar instead of a flat fill block,
+   reinforcing the "signal" identity used throughout.
 ================================ */
 
 .nav-link {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
-
   width: 100%;
-
-  padding: 12px 14px;
-  margin-bottom: 6px;
-
+  padding: 11px 14px 11px 16px;
+  margin-bottom: 4px;
   border-radius: 10px;
-
-  color: var(--text);
+  color: var(--text-secondary);
   text-decoration: none;
+  font-weight: 500;
+  font-size: 13.5px;
+  transition: color .2s ease, background .2s ease, transform .2s ease;
+}
 
-  transition: all .25s ease;
+.nav-link::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 3px;
+  height: 0%;
+  background: var(--primary);
+  border-radius: 3px;
+  transform: translateY(-50%);
+  transition: height .25s ease;
 }
 
 .nav-link:hover {
-  background: rgba(59, 130, 246, .15);
+  background: var(--hover);
   color: var(--text);
-  transform: translateX(4px);
+  transform: translateX(3px);
 }
-
-/* Active Link */
 
 .nav-link.active-link {
-  background: var(--primary);
+  background: linear-gradient(90deg, rgba(34,211,238,.14), transparent 85%);
   color: var(--text);
   font-weight: 600;
-  box-shadow: 0 4px 14px rgba(59, 130, 246, .35);
+  box-shadow: none;
 }
 
-.nav-link.active-link:hover {
-  background: #2563EB;
-  transform: none;
-}
+.nav-link.active-link::before { height: 60%; }
+
+.nav-link.active-link:hover { transform: none; background: linear-gradient(90deg, rgba(34,211,238,.18), transparent 85%); }
 
 /* ================================
    HEADER
 ================================ */
 
 header {
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px var(--shadow);
   transition: box-shadow .25s ease;
 }
 
-header:hover {
-  box-shadow: 0 10px 25px rgba(0,0,0,.25);
-}
+.logo-light { display: none; }
+.light-theme .logo-dark { display: none; }
+.light-theme .logo-light { display: block; }
 
-/* Default: dark theme active, dark-theme wala logo dikhega */
-.logo-light {
-  display: none;
+#themeToggle {
+  transition: transform .3s ease;
 }
+#themeToggle:hover { transform: rotate(18deg) scale(1.1); }
 
-/* Jab light-theme class <html> pe lag jaye, to ulta */
-.light-theme .logo-dark {
-  display: none;
+/* live "Healthy" ping — radar style, reinforces the pulse identity */
+header .animate-pulse {
+  animation: radarPing 1.8s ease-out infinite;
 }
-
-.light-theme .logo-light {
-  display: block;
+@keyframes radarPing {
+  0%   { box-shadow: 0 0 0 0 rgba(52, 211, 153, .55); }
+  70%  { box-shadow: 0 0 0 7px rgba(52, 211, 153, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
 }
 
 /* ================================
@@ -139,87 +210,165 @@ header:hover {
 ================================ */
 
 .stat-card {
-  transition: all .25s ease;
+  position: relative;
+  overflow: hidden;
+  background: var(--card);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+.stat-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120px 60px at 20% 0%, rgba(34,211,238,.10), transparent 70%);
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
 }
 
 .stat-card:hover {
   transform: translateY(-4px);
   background: var(--hover);
-  box-shadow: 0 10px 22px rgba(59,130,246,.18);
+  border-color: rgba(34,211,238,.35);
+  box-shadow: 0 14px 28px var(--shadow);
 }
+
+.stat-card:hover::after { opacity: 1; }
+
+.stat-card p:nth-child(2) {
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+/* Per-metric identity color, ordered as they appear: CPU, RAM, Disk, Network, Temp, Uptime */
+.stat-card:nth-child(1) p:nth-child(2) { color: #38BDF8; }
+.stat-card:nth-child(2) p:nth-child(2) { color: #A78BFA; }
+.stat-card:nth-child(3) p:nth-child(2) { color: #FB7185; }
+.stat-card:nth-child(4) p:nth-child(2) { color: #34D399; }
+.stat-card:nth-child(5) p:nth-child(2) { color: #FBBF24; }
+.stat-card:nth-child(6) p:nth-child(2) { color: var(--primary); }
 
 /* ================================
    CHART CARDS
+   Signature: thin animated scan-line sweeping the top edge,
+   like an oscilloscope refresh — ties every panel back to "pulse".
 ================================ */
 
 .chart-card {
-  transition: all .25s ease;
+  position: relative;
+  overflow: hidden;
+  background: var(--card);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+.chart-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  background-size: 60% 100%;
+  background-repeat: no-repeat;
+  background-position: -60% 0;
+  animation: scanSweep 4.5s ease-in-out infinite;
+  opacity: .8;
+}
+
+@keyframes scanSweep {
+  0%   { background-position: -60% 0; }
+  50%  { background-position: 160% 0; }
+  100% { background-position: 160% 0; }
 }
 
 .chart-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 25px rgba(0,0,0,.35);
+  border-color: var(--border);
+  box-shadow: 0 16px 32px var(--shadow);
 }
+
+/* Per-chart accent tint on the scan-line and label, matched to each canvas's own color */
+.chart-card:has(#cpuChart)::before     { background: linear-gradient(90deg, transparent, #3B82F6, transparent); }
+.chart-card:has(#ramChart)::before     { background: linear-gradient(90deg, transparent, #8B5CF6, transparent); }
+.chart-card:has(#networkChart)::before{ background: linear-gradient(90deg, transparent, #22C55E, transparent); }
+.chart-card:has(#diskChart)::before   { background: linear-gradient(90deg, transparent, #EF4444, transparent); }
 
 /* ================================
    PREDICTION BANNER
 ================================ */
 
 #predictionBanner {
-  transition: all .25s ease;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 8%, var(--card)), var(--card));
+  border: 1px solid rgba(34,211,238,.28) !important;
+  box-shadow: 0 8px 20px var(--shadow);
+  transition: border-color .25s ease, box-shadow .25s ease;
 }
 
 #predictionBanner:hover {
-  border-color: #3B82F6;
+  border-color: var(--primary) !important;
+  box-shadow: 0 10px 26px rgba(34,211,238,.12);
+}
+
+#predictionText {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
 }
 
 /* ================================
-   PAGE SECTIONS (multi-page switching)
+   PAGE SECTIONS
 ================================ */
 
-section {
-  scroll-margin-top: 25px;
-}
+section { scroll-margin-top: 25px; }
 
-.page-section {
-  animation: fadeSlideIn .4s ease both;
-}
-
-.page-section.hidden {
-  display: none;
-}
+.page-section { animation: fadeSlideIn .4s ease both; }
+.page-section.hidden { display: none; }
 
 /* ================================
-   MUTED TEXT — theme-aware override
-   Tailwind ki fixed slate-400/500/300 classes
-   ko hamare CSS variable se jodte hain
+   MUTED TEXT
 ================================ */
 
-.text-slate-400,
-.text-slate-500,
-.text-slate-300 {
+.text-slate-400, .text-slate-500, .text-slate-300 {
   color: var(--text-secondary) !important;
 }
 
-.stat-card,
-.chart-card,
-#predictionBanner,
-#alertsList > div,
-#serversGrid > div {
+.stat-card, .chart-card, #predictionBanner, #alertsList > div, #serversGrid > div {
   border: 1px solid var(--border);
 }
 
-.stat-card p:first-child,
-.chart-card p:first-child {
+.stat-card p:first-child, .chart-card p:first-child {
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   font-weight: 600;
   font-size: 10px;
+  color: var(--text-secondary);
 }
 
 /* ================================
-   ALERT ANIMATION (new alert pulse)
+   ALERTS
 ================================ */
+
+#alertsEmptyState .bg-green-500\/10 {
+  animation: radarPing 2s ease-out infinite;
+}
+
+#alertsList > div {
+  background: var(--card-2);
+  transition: transform .2s ease, background .2s ease;
+}
+
+#alertsList > div:hover {
+  background: var(--hover);
+  transform: translateX(2px);
+}
+
+#clearAlertsBtn {
+  border: 1px solid var(--border);
+  transition: all .2s ease;
+}
+
+#clearAlertsBtn:hover {
+  border-color: var(--danger);
+  background: var(--card);
+}
 
 @keyframes alertPulse {
   0%   { transform: scale(1);    box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
@@ -229,39 +378,55 @@ section {
 
 .alert-new {
   animation: alertPulse .8s ease-in-out 2;
-  border-left: 4px solid #ef4444;
+  border-left: 4px solid var(--danger);
+}
+
+/* ================================
+   SERVERS GRID
+================================ */
+
+#serverCount {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+#serversGrid > div {
+  background: var(--card);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+#serversGrid > div:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px var(--shadow);
+  border-color: rgba(34,211,238,.3);
+}
+
+#serversGrid > div p.font-medium {
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 /* ================================
    PREDICTION INFO TOOLTIP
 ================================ */
 
-.prediction-info {
-  position: relative;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
+.prediction-info { position: relative; display: flex; align-items: center; cursor: pointer; }
 
 .info-icon {
-  width: 18px;
-  height: 18px;
+  width: 18px; height: 18px;
   border-radius: 50%;
   background: var(--primary);
-  color: #ffffff;
+  color: #06121A;
   font-size: 11px;
   font-weight: 700;
   font-style: italic;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   line-height: 1;
   transition: transform .2s ease, box-shadow .2s ease;
 }
 
 .prediction-info:hover .info-icon {
   transform: scale(1.12);
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, .18);
+  box-shadow: 0 0 0 4px rgba(34, 211, 238, .18);
 }
 
 .info-tooltip {
@@ -269,14 +434,14 @@ section {
   bottom: 130%;
   right: 0;
   width: 260px;
-  background: var(--card);
+  background: var(--card-2);
   color: var(--text);
   border: 1px solid var(--border);
   font-size: 12px;
   line-height: 1.5;
   padding: 10px 12px;
   border-radius: 10px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, .25);
+  box-shadow: 0 12px 30px var(--shadow);
   opacity: 0;
   visibility: hidden;
   transform: translateY(6px);
@@ -284,7 +449,6 @@ section {
   z-index: 20;
 }
 
-/* chhota sa neeche wala pointer/arrow — professional touch */
 .info-tooltip::after {
   content: "";
   position: absolute;
@@ -292,20 +456,18 @@ section {
   right: 8px;
   border-width: 6px;
   border-style: solid;
-  border-color: var(--card) transparent transparent transparent;
+  border-color: var(--card-2) transparent transparent transparent;
 }
 
 .prediction-info:hover .info-tooltip {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
+  opacity: 1; visibility: visible; transform: translateY(0);
 }
 
 .info-tooltip code {
-  background: rgba(148, 163, 184, 0.15);
+  background: rgba(140, 155, 200, 0.15);
   padding: 1px 5px;
   border-radius: 4px;
-  font-family: monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
 }
 
@@ -314,17 +476,8 @@ section {
 ================================ */
 
 @keyframes fadeSlideIn {
-
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ================================
@@ -332,9 +485,6 @@ section {
 ================================ */
 
 @media (max-width:768px){
-
-  #sidebar{
-    box-shadow: 8px 0 30px rgba(0,0,0,.35);
-  }
-
+  #sidebar { box-shadow: 8px 0 30px var(--shadow); }
+  .stat-card p:nth-child(2) { font-size: 1.1rem; }
 }
