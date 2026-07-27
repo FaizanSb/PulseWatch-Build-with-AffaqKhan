@@ -472,6 +472,31 @@ section { scroll-margin-top: 25px; }
 }
 
 /* ================================
+   NEW: DEMO + EXPORT BUTTONS
+================================ */
+
+#simulateIncidentBtn:hover,
+#exportReportBtn:hover {
+  transform: translateY(-1px);
+}
+#simulateIncidentBtn, #exportReportBtn {
+  transition: transform .2s ease, background .2s ease, border-color .2s ease;
+}
+
+/* ================================
+   NEW: SERVER 24H TREND PANEL
+================================ */
+
+.trend-toggle-btn {
+  border: 1px solid var(--border);
+}
+
+.trend-chart-wrap {
+  border-top: 1px dashed var(--border);
+  padding-top: 8px;
+}
+
+/* ================================
    ANIMATION
 ================================ */
 

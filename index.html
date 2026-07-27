@@ -9,7 +9,12 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- NEW: html2canvas for the Export Report feature -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link rel="stylesheet" href="dist/output.css">
   <link rel="stylesheet" href="Style.css">
 </head>
@@ -27,8 +32,8 @@
       </div>
       <nav class="flex flex-col gap-1 text-sm">
         <a href="#" class="nav-link active-link" data-section="dashboardSection">🏠 Dashboard</a>
-        <a href="#" class="nav-link" data-section="serversSection">🖥 Servers</a>
-        <a href="#" class="nav-link" data-section="alertsSection">⚠ Alerts</a>
+        <a href="#" class="nav-link" data-section="serversSection">🖥️ Servers</a>
+        <a href="#" class="nav-link" data-section="alertsSection">⚠️ Alerts</a>
       </nav>
     </aside>
 
@@ -67,8 +72,19 @@
       <!-- ============ DASHBOARD SECTION ============ -->
       <section id="dashboardSection" class="page-section space-y-4">
 
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between flex-wrap gap-2">
           <h2 class="text-lg font-semibold ml-1">Dashboard Overview</h2>
+          <!-- NEW: demo + export controls -->
+          <div class="flex items-center gap-2">
+            <button id="simulateIncidentBtn"
+              class="text-xs px-3 py-1.5 rounded-lg bg-card border border-yellow-500/40 text-yellow-400 hover:bg-yellow-500/10 transition">
+              ⚡ Simulate Incident
+            </button>
+            <button id="exportReportBtn"
+              class="text-xs px-3 py-1.5 rounded-lg bg-card border border-primary/40 text-primary hover:bg-primary/10 transition">
+              ⬇ Export Report
+            </button>
+          </div>
         </div>
 
         <!-- OVERVIEW CARDS -->
@@ -107,8 +123,13 @@
 
         <!-- PREDICTION BANNER -->
         <div id="predictionBanner"
-          class="bg-card rounded-xl px-4 py-3 text-sm border border-blue-500/30 text-slate-300 flex items-center justify-between gap-3">
-          <span id="predictionText">Collecting data...</span>
+          class="bg-card rounded-xl px-4 py-3 text-sm border border-blue-500/30 text-slate-300 flex items-center justify-between gap-3 flex-wrap">
+          <div class="flex items-center gap-3 flex-wrap">
+            <span id="predictionText">Collecting data...</span>
+            <!-- NEW: model-fit accuracy badge -->
+            <span id="predictionAccuracy"
+              class="hidden text-[11px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/30"></span>
+          </div>
 
           <div class="prediction-info">
             <span class="info-icon">i</span>
@@ -116,7 +137,9 @@
               <strong>Custom-built prediction engine</strong> — no external ML library used.
               A simple linear regression (<code>y = mx + c</code>) is calculated manually
               from the last 10 CPU readings using the least-squares method to estimate
-              the next likely value and trend direction.
+              the next likely value and trend direction. The dashed yellow line on the
+              chart below is this model's fitted + projected trend — you can visually
+              compare it against the actual (solid) line.
             </div>
           </div>
         </div>

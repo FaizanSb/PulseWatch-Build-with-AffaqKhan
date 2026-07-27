@@ -222,13 +222,25 @@ function updateCards() {
   ramChart.data.datasets[0].data = history.ram;
   ramChart.update("none");
 
+
   networkChart.data.labels = history.network.map((_, i) => i);
   networkChart.data.datasets[0].data = history.network;
   networkChart.update("none");
 
+  networkChart.data.labels = history.network.map((_, i) => i);
+  networkChart.data.datasets[0].data = history.network;
+  networkChart.update("none");
+
+  // NEW: yahan diskChart update missing tha — wapas add kiya
   diskChart.data.labels = history.disk.map((_, i) => i);
   diskChart.data.datasets[0].data = history.disk;
   diskChart.update("none");
+
+  updatePredictionChart(); // replaces the old direct cpuChart update, adds predicted overlay
+
+  updatePredictionChart(); // NEW: replaces the old direct cpuChart update, adds predicted overlay
+
+
 
   checkAlerts();
 
@@ -304,17 +316,17 @@ bellIcon.addEventListener("click", () => {
 // ============ SERVERS PAGE ============
 
 const serversData = [
-  { name: "Web Server 01",    location: "US-East",    status: "online",  cpu: 42, ram: 61 },
-  { name: "Database Primary", location: "US-East",    status: "online",  cpu: 58, ram: 74 },
-  { name: "Cache Server",     location: "EU-West",    status: "online",  cpu: 23, ram: 40 },
-  { name: "Backup Node",      location: "AP-South",   status: "warning", cpu: 81, ram: 88 },
-  { name: "API Gateway",      location: "US-West",    status: "online",  cpu: 35, ram: 52 },
-  { name: "Worker Node 02",   location: "EU-Central", status: "offline", cpu: 0,  ram: 0  }
+  { name: "Web Server 01", location: "US-East", status: "online", cpu: 42, ram: 61 },
+  { name: "Database Primary", location: "US-East", status: "online", cpu: 58, ram: 74 },
+  { name: "Cache Server", location: "EU-West", status: "online", cpu: 23, ram: 40 },
+  { name: "Backup Node", location: "AP-South", status: "warning", cpu: 81, ram: 88 },
+  { name: "API Gateway", location: "US-West", status: "online", cpu: 35, ram: 52 },
+  { name: "Worker Node 02", location: "EU-Central", status: "offline", cpu: 0, ram: 0 }
 ];
 
 function statusBadge(status) {
   const map = {
-    online:  "bg-green-400/15 text-green-400",
+    online: "bg-green-400/15 text-green-400",
     warning: "bg-yellow-400/15 text-yellow-400",
     offline: "bg-red-400/15 text-red-400"
   };
@@ -323,7 +335,7 @@ function statusBadge(status) {
 
 function renderServers() {
   const grid = document.getElementById("serversGrid");
-  grid.innerHTML = serversData.map(s => `
+  grid.innerHTML = serversData.map((s, idx) => `
     <div class="bg-card rounded-xl p-4 chart-card">
       <div class="flex items-center justify-between mb-2">
         <p class="font-medium text-sm">${s.name}</p>
@@ -334,10 +346,21 @@ function renderServers() {
         <span>CPU ${s.cpu}%</span>
         <span>RAM ${s.ram}%</span>
       </div>
+
+      <!-- NEW: 24h trend toggle -->
+      <button class="trend-toggle-btn text-[11px] mt-3 px-2 py-1 rounded-lg bg-bgmain text-slate-400 hover:text-primary transition w-full" data-index="${idx}">
+        ${openTrends.has(String(idx)) ? "📉 Hide 24h Trend" : "📈 View 24h Trend"}
+      </button>
+      <div class="trend-chart-wrap ${openTrends.has(String(idx)) ? "" : "hidden"} mt-2" data-index="${idx}">
+        <canvas id="serverTrend-${idx}" height="60"></canvas>
+      </div>
     </div>
   `).join("");
 
   document.getElementById("serverCount").textContent = `${serversData.length} servers`;
+
+  // NEW: re-create trend charts for any panels the user had open before this re-render
+  openTrends.forEach(idx => initServerTrendChart(idx));
 }
 
 // Server ke apne cpu/ram values ko live fluctuate karta hai (offline server ko 0/0 pe fix rakhta hai)
@@ -362,6 +385,227 @@ document.getElementById("clearAlertsBtn").addEventListener("click", () => {
   alertLog = [];
   renderAlerts();
   updateAlertBadge();
+});
+
+// ================================================
+// NEW: PREDICTED-VS-ACTUAL OVERLAY ON CPU CHART
+// ================================================
+
+// Add a second dataset to the existing cpuChart for the regression line
+cpuChart.data.datasets.push({
+  label: "Predicted",
+  data: [],
+  borderColor: "#FBBF24",
+  borderDash: [5, 4],
+  borderWidth: 2,
+  pointRadius: 0,
+  fill: false,
+  tension: 0.35
+});
+
+function getRegression(values) {
+  const n = values.length;
+  const xs = values.map((_, i) => i);
+  const xMean = xs.reduce((a, b) => a + b, 0) / n;
+  const yMean = values.reduce((a, b) => a + b, 0) / n;
+
+  let num = 0, den = 0;
+  for (let i = 0; i < n; i++) {
+    num += (xs[i] - xMean) * (values[i] - yMean);
+    den += (xs[i] - xMean) ** 2;
+  }
+  const slope = den === 0 ? 0 : num / den;
+  const intercept = yMean - slope * xMean;
+  return { slope, intercept };
+}
+
+function updatePredictionChart() {
+  const values = history.cpu;
+  const n = values.length;
+  const FUTURE_POINTS = 5;
+  const accEl = document.getElementById("predictionAccuracy");
+
+  // Same "collecting data" gate as predictTrend() — keep original chart behavior intact until then
+  if (n < 4) {
+    cpuChart.data.labels = values.map((_, i) => i);
+    cpuChart.data.datasets[0].data = values;
+    cpuChart.data.datasets[1].data = [];
+    cpuChart.update("none");
+    accEl.classList.add("hidden");
+    return;
+  }
+
+  const { slope, intercept } = getRegression(values);
+
+  // Fitted line across existing points + projected extension into the future
+  const predictedFull = [];
+  for (let i = 0; i < n + FUTURE_POINTS; i++) {
+    predictedFull.push(Math.round((slope * i + intercept) * 10) / 10);
+  }
+
+  // Actual line stops at "now" — padded with nulls so Chart.js doesn't draw it into the future
+  const actualPadded = values.concat(Array(FUTURE_POINTS).fill(null));
+  const labels = Array.from({ length: n + FUTURE_POINTS }, (_, i) => i);
+
+  cpuChart.data.labels = labels;
+  cpuChart.data.datasets[0].data = actualPadded;
+  cpuChart.data.datasets[1].data = predictedFull;
+  cpuChart.update("none");
+
+  // "Model fit" accuracy — how close the fitted line is to actual readings so far
+  const errors = values.map((v, i) => Math.abs(v - predictedFull[i]));
+  const mae = errors.reduce((a, b) => a + b, 0) / errors.length;
+  const meanActual = values.reduce((a, b) => a + b, 0) / values.length;
+  const accuracy = Math.max(0, Math.min(100, Math.round(100 - (mae / meanActual) * 100)));
+
+  accEl.textContent = `Model fit: ${accuracy}%`;
+  accEl.classList.remove("hidden");
+}
+
+
+// ================================================
+// NEW: SIMULATE INCIDENT (demo mode)
+// ================================================
+
+document.getElementById("simulateIncidentBtn").addEventListener("click", () => {
+  cpu = 93;
+  ram = Math.min(ram + 15, 97);
+
+  // Bypass cooldown so the alert fires immediately for the live demo
+  lastAlertTime.cpu = 0;
+  lastAlertTime.ram = 0;
+
+  document.getElementById("cpuValue").textContent = cpu + "%";
+  document.getElementById("ramValue").textContent = ram + "%";
+  setStatus("cpuStatus", cpu, 80);
+  setStatus("ramStatus", ram, 85);
+
+  history.cpu.push(cpu);
+  history.ram.push(ram);
+  if (history.cpu.length > 20) history.cpu.shift();
+  if (history.ram.length > 20) history.ram.shift();
+
+  checkAlerts();
+  updatePredictionChart();
+});
+
+
+// ================================================
+// NEW: EXPORT REPORT (html2canvas → PNG download)
+// ================================================
+
+document.getElementById("exportReportBtn").addEventListener("click", async () => {
+  const target = document.getElementById("dashboardSection");
+  const btn = document.getElementById("exportReportBtn");
+  const originalText = btn.textContent;
+
+  try {
+    btn.textContent = "Generating...";
+
+    const canvas = await html2canvas(target, {
+      backgroundColor: "#0A0E1A",
+      useCORS: true,
+      // NEW: html2canvas can't parse color-mix() — override just this one
+      // rule in the cloned document used for capture, leaving live site untouched
+      onclone: (clonedDoc) => {
+        const isLight = document.documentElement.classList.contains("light-theme");
+        const style = clonedDoc.createElement("style");
+        style.textContent = `
+          #predictionBanner {
+            background: ${isLight ? "#FFFFFF" : "#121933"} !important;
+          }
+        `;
+        clonedDoc.head.appendChild(style);
+      }
+    });
+
+    const link = document.createElement("a");
+    link.download = `pulsewatch-report-${Date.now()}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+    btn.textContent = "Done ✓";
+  } catch (err) {
+    console.error("Export failed:", err);
+    btn.textContent = "Failed — check console";
+  } finally {
+    setTimeout(() => { btn.textContent = originalText; }, 2000);
+  }
+});
+
+
+// ================================================
+// NEW: PER-SERVER 24H TREND SPARKLINES
+// ================================================
+
+const openTrends = new Set();          // which server panels are currently expanded
+const serverTrendCharts = {};          // Chart.js instances, keyed by server index (string)
+const serverTrendDataCache = {};       // simulated 24h data, generated once per server, cached
+
+function generate24hData(idx) {
+  const points = [];
+  for (let h = 0; h < 24; h++) {
+    const base = 35 + 25 * Math.sin(((h - 6) / 24) * Math.PI * 2) + (idx * 4);
+    const noise = (Math.random() - 0.5) * 10;
+    points.push(Math.max(5, Math.min(97, Math.round(base + noise))));
+  }
+  return points;
+}
+
+function initServerTrendChart(idx) {
+  const canvas = document.getElementById(`serverTrend-${idx}`);
+  if (!canvas) return;
+
+  if (!serverTrendDataCache[idx]) {
+    serverTrendDataCache[idx] = generate24hData(Number(idx));
+  }
+  const data = serverTrendDataCache[idx];
+
+  if (serverTrendCharts[idx]) {
+    try { serverTrendCharts[idx].destroy(); } catch (e) { }
+  }
+
+  const ctx = canvas.getContext("2d");
+  serverTrendCharts[idx] = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: data.map((_, h) => `${h}:00`),
+      datasets: [{
+        data,
+        borderColor: "#22D3EE",
+        backgroundColor: "#22D3EE22",
+        borderWidth: 2,
+        pointRadius: 0,
+        tension: 0.35,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: { x: { display: false }, y: { display: false } },
+      plugins: { legend: { display: false } }
+    }
+  });
+}
+
+// Event delegation — works even after renderServers() rebuilds the grid's innerHTML
+document.getElementById("serversGrid").addEventListener("click", (e) => {
+  const btn = e.target.closest(".trend-toggle-btn");
+  if (!btn) return;
+
+  const idx = btn.dataset.index;
+  const wrap = document.querySelector(`.trend-chart-wrap[data-index="${idx}"]`);
+  const isHidden = wrap.classList.contains("hidden");
+
+  if (isHidden) {
+    wrap.classList.remove("hidden");
+    btn.textContent = "📉 Hide 24h Trend";
+    openTrends.add(idx);
+    initServerTrendChart(idx);
+  } else {
+    wrap.classList.add("hidden");
+    btn.textContent = "📈 View 24h Trend";
+    openTrends.delete(idx);
+  }
 });
 
 // ============ THEME TOGGLE ============
